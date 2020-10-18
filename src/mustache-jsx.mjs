@@ -609,7 +609,7 @@ Writer.prototype.renderSection = function renderSection(
   const at = nested++;
   const id = toId(name);
   const local = `_${at}_${id}`;
-  const localKey = `_k_${at}_${id}`;
+  const localKey = `_i_${at}`;
   const ref = `value("${name.replace('"', '\\"')}")`;
   const inside = this.renderTokens(
     token[4],
