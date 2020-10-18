@@ -2,7 +2,7 @@ export default function (babel) {
   const { types: t } = babel;
 
   return {
-    name: "simpler-jsx",
+    name: "jsx-excess-fragment",
     visitor: {
       CallExpression(path, state) {
         if (
