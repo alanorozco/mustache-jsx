@@ -1,0 +1,122 @@
+<title>👨🏻</title>
+<script src="https://unpkg.com/prettier@2.1.2/standalone.js"></script>
+<script src="https://unpkg.com/prettier@2.1.2/parser-babel.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.12.3/babel.min.js"></script>
+<style>
+  body {
+    margin: 0;
+    font-size: 14px;
+    font-family: "Cascadia Code", "Fira Code", Menlo, Consolas, monospace;
+    line-height: 1.5;
+    overflow: hidden;
+  }
+  main {
+    display: flex;
+    height: 100%;
+    background: #aaa;
+  }
+  main > * {
+    flex: 1;
+    flex-direction: column;
+    display: flex;
+    margin: 0 0 0 -1px;
+    border: 1px solid #ddd;
+    border-width: 0 1px;
+  }
+  textarea {
+    padding: 0 16px 0;
+    font: inherit;
+    resize: none;
+    flex: 1;
+    outline: none;
+    opacity: 0.8;
+    border-width: 52px 0;
+    border-color: white;
+    background: white;
+    white-space: pre;
+    overflow-wrap: nowrap;
+  }
+  h3 {
+    padding: 16px 16px 0;
+    margin: 0;
+    font: inherit;
+    position: absolute;
+    z-index: 1;
+    color: #999;
+  }
+  textarea:focus {
+    opacity: 1;
+  }
+  textarea::before {
+    display: block;
+    content: attr(data-label);
+  }
+  .error {
+    color: red;
+  }
+</style>
+<main>
+  <div>
+    <h3>mustache</h3>
+    <textarea></textarea>
+  </div>
+  <div>
+    <h3>javascript</h3>
+    <textarea readonly></textarea>
+  </div>
+</main>
+<script>
+  self.DEFAULT_TEMPLATE = `{{#iteration}}
+  <b>{{name}}</b>
+{{/iteration}}
+
+{{^falsy}}
+  falsy or empty
+{{/falsy}}
+`;
+</script>
+<script type="module">
+  import Writer from "./mustache-jsx.mjs";
+  import babelPluginJsxExcessFragment from "./babel-plugin-jsx-excess-fragment.mjs";
+
+  const jsx = {
+    pragma: "h",
+    pragmaFrag: "Fragment",
+  };
+
+  const babelConfig = {
+    presets: ["es2016", ["react", jsx]],
+    plugins: [[babelPluginJsxExcessFragment, jsx]],
+  };
+
+  const prettierConfig = {
+    parser: "babel",
+    plugins: prettierPlugins,
+    printWidth: 80,
+  };
+
+  const envelope = (out) =>
+    `(${jsx.pragma}, ${jsx.pragmaFrag}, value) => (${out})`;
+
+  const defaultWriter = new Writer();
+  const template = document.querySelector("textarea");
+
+  function update() {
+    const out = envelope(defaultWriter.render(template.value, {}));
+    const container = document.querySelector("[readonly]");
+    try {
+      const { code } = Babel.transform(out, babelConfig);
+      container.classList.remove("error");
+      container.textContent = prettier.format(code, prettierConfig);
+    } catch (e) {
+      container.classList.add("error");
+      container.textContent = e.message;
+      console.error(e);
+    }
+  }
+
+  template.addEventListener("keyup", update);
+  template.value = DEFAULT_TEMPLATE;
+
+  update();
+</script>
