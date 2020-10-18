@@ -620,7 +620,10 @@ Writer.prototype.renderSection = function renderSection(
     ),
     originalTemplate
   );
-  return `{(Array.isArray(${ref}) ? (${ref}.length < 1 ? [false] : ${ref}) : [${ref}]).map((${local}, ${localKey}) => ${inside})}`;
+  return `{(Array.isArray(${ref}) ?
+    (${ref}.length < 1 ? [false] : ${ref}) :
+    (${ref} ? [${ref}] : [])
+  ).map((${local}, ${localKey}) => ${inside})}`;
   // var self = this;
   // var buffer = "";
   // var value = context.lookup(token[1]);
