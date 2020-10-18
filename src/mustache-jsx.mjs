@@ -1,3 +1,5 @@
+const toId = id => id.replace(/[^\w]*/, '');
+
 /*!
  * mustache.js - Logic-less {{mustache}} templates with JavaScript
  * http://github.com/janl/mustache.js
@@ -605,8 +607,9 @@ Writer.prototype.renderSection = function renderSection(
 ) {
   const name = token[1];
   const at = nested++;
-  const local = `_${at}`;
-  const localKey = `_k_${at}`;
+  const id = toId(name);
+  const local = `_${at}_${id}`;
+  const localKey = `_k_${at}_${id}`;
   const ref = `value("${name.replace('"', '\\"')}")`;
   const inside = this.renderTokens(
     token[4],
