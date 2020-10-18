@@ -621,7 +621,7 @@ Writer.prototype.renderSection = function renderSection(
     originalTemplate
   );
   return `{(Array.isArray(${ref}) ?
-    (${ref}.length < 1 ? [] : ${ref}) :
+    (${ref}.length > 0 ? ${ref} : []) :
     (${ref} ? [${ref}] : [])
   ).map((${local}, ${localKey}) => ${inside})}`;
   // var self = this;
