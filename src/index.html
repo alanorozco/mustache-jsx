@@ -66,13 +66,16 @@
   </div>
 </main>
 <script>
-  self.DEFAULT_TEMPLATE = `{{#iteration}}
-  <b>{{name}}</b>
-{{/iteration}}
-
-{{^falsy}}
-  falsy or empty
-{{/falsy}}
+  self.DEFAULT_TEMPLATE = `<div>
+  {{#items}}
+    <div>
+      <h3>{{name}}</h3>
+    </div>
+  {{/items}}
+  {{^items}}
+    empty list
+  {{/items}}
+</div>
 `;
 </script>
 <script type="module">
