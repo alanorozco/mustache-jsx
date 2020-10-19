@@ -45,7 +45,7 @@ const toMustacheXhtml = (html) => {
 function update() {
   try {
     const rendered = envelope(
-      defaultWriter.render(toMustacheXhtml(template.value), {})
+      defaultWriter.render(toMustacheXhtml(template.value))
     );
     const code =
       document.querySelector("select").value === "javascript"
