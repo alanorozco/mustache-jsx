@@ -138,10 +138,12 @@
   const toMustacheXhtml = (html) => {
     const parsed = new DOMParser().parseFromString(html, "text/html");
     const serialized = new XMLSerializer().serializeToString(parsed);
-    return /<body>([\s\S]*)<\/body>/im
-      .exec(serialized)[1]
-      // ugly and probably unsafe
-      .replace(/="{{([^"]*)}}"/gim, (_, content) => `={{${content}}}`);
+    return (
+      /<body>([\s\S]*)<\/body>/im
+        .exec(serialized)[1]
+        // ugly and probably unsafe
+        .replace(/="{{([^"]*)}}"/gim, (_, content) => `={{${content}}}`)
+    );
   };
 
   function update() {
