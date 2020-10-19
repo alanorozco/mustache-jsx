@@ -382,112 +382,31 @@ Scanner.prototype.scanUntil = function scanUntil(re) {
   return match;
 };
 
-/**
- * Represents a rendering context by wrapping a view object and
- * maintaining a reference to the parent context.
- */
-function Context(view, parentContext) {
-  this.view = view;
-  this.cache = { ".": this.view };
-  this.parent = parentContext;
-}
-
-/**
- * Creates a new context using the given view with this context
- * as the parent.
- */
-Context.prototype.push = function push(view) {
-  return new Context(view, this);
-};
-
-/**
- * Returns the value of the given name in this context, traversing
- * up the context hierarchy if the value is absent in this context's view.
- */
-Context.prototype.lookup = function lookup(name) {
-  var cache = this.cache;
-
-  var value;
-  if (cache.hasOwnProperty(name)) {
-    value = cache[name];
-  } else {
-    var context = this,
-      intermediateValue,
-      names,
-      index,
-      lookupHit = false;
-
-    while (context) {
-      if (name.indexOf(".") > 0) {
-        intermediateValue = context.view;
-        names = name.split(".");
-        index = 0;
-
-        /**
-         * Using the dot notion path in `name`, we descend through the
-         * nested objects.
-         *
-         * To be certain that the lookup has been successful, we have to
-         * check if the last object in the path actually has the property
-         * we are looking for. We store the result in `lookupHit`.
-         *
-         * This is specially necessary for when the value has been set to
-         * `undefined` and we want to avoid looking up parent contexts.
-         *
-         * In the case where dot notation is used, we consider the lookup
-         * to be successful even if the last "object" in the path is
-         * not actually an object but a primitive (e.g., a string, or an
-         * integer), because it is sometimes useful to access a property
-         * of an autoboxed primitive, such as the length of a string.
-         **/
-        while (intermediateValue != null && index < names.length) {
-          if (index === names.length - 1)
-            lookupHit =
-              hasProperty(intermediateValue, names[index]) ||
-              primitiveHasOwnProperty(intermediateValue, names[index]);
-
-          intermediateValue = intermediateValue[names[index++]];
-        }
-      } else {
-        intermediateValue = context.view[name];
-
-        /**
-         * Only checking against `hasProperty`, which always returns `false` if
-         * `context.view` is not an object. Deliberately omitting the check
-         * against `primitiveHasOwnProperty` if dot notation is not used.
-         *
-         * Consider this example:
-         * ```
-         * Mustache.render("The length of a football field is {{#length}}{{length}}{{/length}}.", {length: "100 yards"})
-         * ```
-         *
-         * If we were to check also against `primitiveHasOwnProperty`, as we do
-         * in the dot notation case, then render call would return:
-         *
-         * "The length of a football field is 9."
-         *
-         * rather than the expected:
-         *
-         * "The length of a football field is 100 yards."
-         **/
-        lookupHit = hasProperty(context.view, name);
-      }
-
-      if (lookupHit) {
-        value = intermediateValue;
-        break;
-      }
-
-      context = context.parent;
-    }
-
-    cache[name] = value;
+class Context {
+  constructor(locals) {
+    this.locals = locals || [];
   }
 
-  if (isFunction(value)) value = value.call(this.view);
+  lookup(name) {
+    let top, sub;
+    if (name === ".") {
+      top = "null";
+    } else {
+      [top, ...sub] = name.split(".");
+    }
 
-  return value;
-};
+    if (sub && sub.length) {
+      sub.unshift("");
+    }
+
+    const args = [`"${top.replace('"', '\\"')}"`, ...this.locals];
+    return `view(${args.join(",")})${sub.join(".")}`;
+  }
+
+  sub(local) {
+    return new Context([local, ...this.locals]);
+  }
+}
 
 /**
  * A Writer knows how to take a stream of tokens and render them to a
@@ -551,10 +470,8 @@ Writer.prototype.parse = function parse(template, tags) {
  */
 Writer.prototype.render = function render(template, view, partials, tags) {
   nested = 0;
-
   var tokens = this.parse(template, tags);
-  var context = view instanceof Context ? view : new Context(view, undefined);
-  return this.renderTokens(tokens, context, partials, template, tags);
+  return this.renderTokens(tokens, new Context(), partials, template, tags);
 };
 
 /**
@@ -610,70 +527,14 @@ Writer.prototype.renderSection = function renderSection(
   const id = toId(name);
   const local = `_${at}_${id}`;
   const localKey = `_i_${at}`;
-  const ref = `view("${name.replace('"', '\\"')}")`;
   const inside = this.renderTokens(
     token[4],
-    new Proxy(
-      {},
-      {
-        get: function (target, name, receiver) {
-          return `view("${name.replace('"', '\\"')}", ${local})`;
-        },
-      }
-    ),
+    context.sub(local),
     originalTemplate
   );
-  return `{section(${ref}).map((${local}, ${localKey}) => ${inside})}`;
-  // var self = this;
-  // var buffer = "";
-  // var value = context.lookup(token[1]);
-
-  // // This function is used to render an arbitrary template
-  // // in the current context by higher-order sections.
-  // function subRender(template) {
-  //   return self.render(template, context, partials);
-  // }
-
-  // if (!value) return;
-
-  // if (isArray(value)) {
-  //   for (var j = 0, valueLength = value.length; j < valueLength; ++j) {
-  //     buffer += this.renderTokens(
-  //       token[4],
-  //       context.push(value[j]),
-  //       partials,
-  //       originalTemplate
-  //     );
-  //   }
-  // } else if (
-  //   typeof value === "object" ||
-  //   typeof value === "string" ||
-  //   typeof value === "number"
-  // ) {
-  //   buffer += this.renderTokens(
-  //     token[4],
-  //     context.push(value),
-  //     partials,
-  //     originalTemplate
-  //   );
-  // } else if (isFunction(value)) {
-  //   if (typeof originalTemplate !== "string")
-  //     throw new Error(
-  //       "Cannot use higher-order sections without the original template"
-  //     );
-
-  //   // Extract the portion of the original template that the section contains.
-  //   value = value.call(
-  //     context.view,
-  //     originalTemplate.slice(token[3], token[5]),
-  //     subRender
-  //   );
-
-  //   if (value != null) buffer += value;
-  // } else {
-  //   buffer += this.renderTokens(token[4], context, partials, originalTemplate);
-  // }
-  // return buffer;
+  return `{section(${context.lookup(
+    name
+  )}).map((${local}, ${localKey}) => ${inside})}`;
 };
 
 Writer.prototype.renderInverted = function renderInverted(
@@ -682,19 +543,14 @@ Writer.prototype.renderInverted = function renderInverted(
   partials,
   originalTemplate
 ) {
-  const ref = `view("${token[1].replace('"', '\\"')}")`;
-  return `{inverted(${ref}) && ${this.renderTokens(
+  // // Use JavaScript's definition of falsy. Include empty arrays.
+  // // See https://github.com/janl/mustache.js/issues/186
+  return `{inverted(${context.lookup(token[1])}) && ${this.renderTokens(
     token[4],
     context,
     partials,
     originalTemplate
   )}}`;
-  // var value = context.lookup(token[1]);
-
-  // // Use JavaScript's definition of falsy. Include empty arrays.
-  // // See https://github.com/janl/mustache.js/issues/186
-  // if (!value || (isArray(value) && value.length === 0))
-  //   return this.renderTokens(token[4], context, partials, originalTemplate);
 };
 
 Writer.prototype.indentPartial = function indentPartial(
@@ -740,18 +596,11 @@ Writer.prototype.renderPartial = function renderPartial(
 };
 
 Writer.prototype.unescapedValue = function unescapedValue(token, context) {
-  return `{html(${
-    context[token[1]] || `view("${token[1].replace('"', '\\"')}")`
-  })}`;
-  // var value = context.lookup(token[1]);
-  // if (value != null) return value;
+  return `{html(${context.lookup(token[1])})}`;
 };
 
 Writer.prototype.escapedValue = function escapedValue(token, context) {
-  return `{${context[token[1]] || `view("${token[1].replace('"', '\\"')}")`}}`;
-  // var value = context.lookup(token[1]);
-  // if (value != null)
-  //   return typeof value === "number" ? String(value) : mustache.escape(value);
+  return `{${context.lookup(token[1])}}`;
 };
 
 Writer.prototype.rawValue = function rawValue(token) {
