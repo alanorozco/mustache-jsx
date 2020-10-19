@@ -5,8 +5,9 @@
   "main": "src/mustache-jsx.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "serve src",
-    "dist": "mkdir -p dist && cp -R src/* dist"
+    "copy": "mkdir -p dist && cp -R src/* dist",
+    "serve": "npm run copy && rollup -cw & serve dist",
+    "dist": "npm run copy && rollup -c"
   },
   "repository": {
     "type": "git",
@@ -17,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/alanorozco/mustache-jsx/issues"
   },
-  "homepage": "https://github.com/alanorozco/mustache-jsx#readme"
+  "homepage": "https://github.com/alanorozco/mustache-jsx#readme",
+  "devDependencies": {
+    "rollup": "^2.32.0"
+  }
 }
