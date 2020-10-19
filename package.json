@@ -4,7 +4,8 @@
   "description": "Turn mustache templates into JSX output functions",
   "main": "src/mustache-jsx.mjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "ava",
+    "test:update": "rm -Rf test/*/output.* && ava",
     "copy": "mkdir -p dist && cp -R src/* dist",
     "serve": "npm run copy && rollup -cw & serve dist",
     "dist": "npm run copy && rollup -c"
@@ -20,6 +21,8 @@
   },
   "homepage": "https://github.com/alanorozco/mustache-jsx#readme",
   "devDependencies": {
+    "ava": "^3.13.0",
+    "prettier": "^2.1.2",
     "rollup": "^2.32.0"
   }
 }
