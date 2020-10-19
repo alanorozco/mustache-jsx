@@ -80,7 +80,7 @@
         <option>javascript</option>
         <option>jsx</option>
       </select>
-      <label for="excess-fragment">
+      <label data-only="javascript" for="excess-fragment">
         <input type="checkbox" name="excess-fragment" id="excess-fragment" />
         excess fragments
       </label>
@@ -176,14 +176,19 @@
     .querySelector("select")
     .addEventListener("change", ({ currentTarget }) => {
       update();
-      const excessFragment = document.querySelector("[for=excess-fragment]");
-      if (currentTarget.value !== "javascript") {
-        excessFragment.setAttribute("hidden", "");
-      } else {
-        excessFragment.removeAttribute("hidden");
-      }
+      Array.from(document.querySelectorAll("[data-only]")).forEach(
+        (element) => {
+          if (currentTarget.value !== element.dataset.only) {
+            element.setAttribute("hidden", "");
+          } else {
+            element.removeAttribute("hidden");
+          }
+        }
+      );
     });
-  document.querySelector("[type=checkbox]").addEventListener("change", update);
+  Array.from(document.querySelectorAll("[type=checkbox]")).forEach((e) =>
+    e.addEventListener("change", update)
+  );
 
   update();
 </script>
