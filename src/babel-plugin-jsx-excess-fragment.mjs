@@ -19,14 +19,17 @@ export default function (babel) {
         ) {
           return;
         }
-        const args = path.node.arguments.slice(2);
-        while (t.isStringLiteral(args[0]) && /^[\s\S\t\n]*$/.test(args[0])) {
-          args.shift();
+        const { arguments: args } = path.node;
+        let i = 2;
+        while (
+          t.isStringLiteral(args[i]) &&
+          /^[\s\t\n]*$/im.test(args[i].value)
+        ) {
+          i++;
         }
-        if (args.length !== 1) {
-          return;
+        if (i === args.length - 1) {
+          path.replaceWith(args[i]);
         }
-        path.replaceWith(args[0]);
       },
     },
   };
