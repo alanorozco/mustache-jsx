@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "serve src",
-    "dist": "mkdir -p dist && cp -R src/* dist"
+    "dist": "mkdir -p dist && cp -R src dist"
   },
   "repository": {
     "type": "git",
