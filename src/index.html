@@ -102,8 +102,6 @@
 `;
 </script>
 <script type="module">
-  const { minify } = require("html-minifier"); // ugh
-
   import Writer from "./mustache-jsx.mjs";
   import babelPluginJsxExcessFragment from "./babel-plugin-jsx-excess-fragment.mjs";
 
@@ -139,10 +137,7 @@
   const toMustacheXhtml = (html) => {
     const parsed = new DOMParser().parseFromString(html, "text/html");
     const serialized = new XMLSerializer().serializeToString(parsed);
-    return minify(/<body>([\s\S]*)<\/body>/im.exec(serialized)[1], {
-      removeAttributeQuotes: true,
-      keepClosingSlash: true,
-    });
+    return /<body>([\s\S]*)<\/body>/im.exec(serialized)[1];
   };
 
   function update() {
