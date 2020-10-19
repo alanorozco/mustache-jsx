@@ -20,6 +20,10 @@ export default function (babel) {
           return;
         }
         const { arguments: args } = path.node;
+        if (args.length === 2) {
+          path.replaceWith(t.BooleanLiteral(false));
+          return;
+        }
         let i = 2;
         while (
           t.isStringLiteral(args[i]) &&
