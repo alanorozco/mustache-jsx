@@ -389,9 +389,7 @@ class Context {
 
   lookup(name) {
     let top, sub;
-    if (name === ".") {
-      top = "null";
-    } else {
+    if (name !== ".") {
       [top, ...sub] = name.split(".");
     }
 
@@ -399,8 +397,11 @@ class Context {
       sub.unshift("");
     }
 
-    const args = [`"${top.replace('"', '\\"')}"`, ...this.locals];
-    return `view(${args.join(",")})${sub.join(".")}`;
+    const args = [
+      top ? `"${top.replace('"', '\\"')}"` : "null",
+      ...this.locals,
+    ];
+    return `view(${args.join(",")})${sub ? sub.join(".") : ""}`;
   }
 
   sub(local) {
