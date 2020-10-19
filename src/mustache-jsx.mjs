@@ -534,7 +534,7 @@ Writer.prototype.renderSection = function renderSection(
   );
   return `{section(${context.lookup(
     name
-  )}).map((${local}, ${localKey}) => ${inside})}`;
+  )}, (${local}, ${localKey}) => ${inside})}`;
 };
 
 Writer.prototype.renderInverted = function renderInverted(

@@ -118,14 +118,15 @@
 
   const envelope = (out) =>
     `
-    const section = ref => (Array.isArray(ref) ?
+    const section = (ref, cb) => (Array.isArray(ref) ?
       (ref.length > 0 ? ref : []) :
       (ref ? [ref] : [])
-    );
+    ).map(cb);
 
     const inverted = ref => (!ref || (Array.isArray(ref) && ref.length === 0));
 
-    (view, ${jsx.pragma}, ${jsx.pragmaFrag}, html) => (${out})`;
+    self._template = (view, ${jsx.pragma}, ${jsx.pragmaFrag}, html) => (${out})
+    `;
 
   const defaultWriter = new Writer();
 
