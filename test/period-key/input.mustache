@@ -1,7 +1,14 @@
 <div>
+  {{! resolved: foo.bar }}
   {{foo.bar}}
+  {{! resolved: bar.baz }}
   <div>{{bar.baz}}</div>
   {{#foo}}
+    {{! resolved: foo.bar.baz }}
     <p>{{bar.baz}}</p>
+    {{#bar}}
+      {{! resolved: foo.bar.x.y.z }}
+      <p>{{x.y.z}}</p>
+    {{/bar}}
   {{/foo}}
 </div>
