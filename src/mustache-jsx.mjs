@@ -1,4 +1,4 @@
-const toId = id => id.replace(/[^\w]*/, '');
+const toId = (id) => id.replace(/[^\w]*/, "");
 
 /*!
  * mustache.js - Logic-less {{mustache}} templates with JavaScript
@@ -610,23 +610,20 @@ Writer.prototype.renderSection = function renderSection(
   const id = toId(name);
   const local = `_${at}_${id}`;
   const localKey = `_i_${at}`;
-  const ref = `value("${name.replace('"', '\\"')}")`;
+  const ref = `view("${name.replace('"', '\\"')}")`;
   const inside = this.renderTokens(
     token[4],
     new Proxy(
       {},
       {
         get: function (target, name, receiver) {
-          return `value("${name.replace('"', '\\"')}", ${local})`;
+          return `view("${name.replace('"', '\\"')}", ${local})`;
         },
       }
     ),
     originalTemplate
   );
-  return `{(Array.isArray(${ref}) ?
-    (${ref}.length > 0 ? ${ref} : []) :
-    (${ref} ? [${ref}] : [])
-  ).map((${local}, ${localKey}) => ${inside})}`;
+  return `{section(${ref}).map((${local}, ${localKey}) => ${inside})}`;
   // var self = this;
   // var buffer = "";
   // var value = context.lookup(token[1]);
@@ -685,8 +682,8 @@ Writer.prototype.renderInverted = function renderInverted(
   partials,
   originalTemplate
 ) {
-  const ref = `value("${token[1].replace('"', '\\"')}")`;
-  return `{(!${ref} || (Array.isArray(${ref}) && ${ref}.length === 0)) && ${this.renderTokens(
+  const ref = `view("${token[1].replace('"', '\\"')}")`;
+  return `{inverted(${ref}) && ${this.renderTokens(
     token[4],
     context,
     partials,
@@ -743,12 +740,15 @@ Writer.prototype.renderPartial = function renderPartial(
 };
 
 Writer.prototype.unescapedValue = function unescapedValue(token, context) {
-  var value = context.lookup(token[1]);
-  if (value != null) return value;
+  return `{html(${
+    context[token[1]] || `view("${token[1].replace('"', '\\"')}")`
+  })}`;
+  // var value = context.lookup(token[1]);
+  // if (value != null) return value;
 };
 
 Writer.prototype.escapedValue = function escapedValue(token, context) {
-  return `{${context[token[1]]}}`;
+  return `{${context[token[1]] || `view("${token[1].replace('"', '\\"')}")`}}`;
   // var value = context.lookup(token[1]);
   // if (value != null)
   //   return typeof value === "number" ? String(value) : mustache.escape(value);

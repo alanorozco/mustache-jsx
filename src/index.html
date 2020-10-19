@@ -1,5 +1,9 @@
 <title>mustache-jsx</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨🏻</text></svg>">
+<link
+  rel="icon"
+  href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨🏻</text></svg>"
+/>
+<script src="lib/htmlminifier.js"></script>
 <script src="https://unpkg.com/prettier@2.1.2/standalone.js"></script>
 <script src="https://unpkg.com/prettier@2.1.2/parser-babel.js"></script>
 <script src="https://unpkg.com/@babel/standalone@7.12.3/babel.min.js"></script>
@@ -24,9 +28,13 @@
     border: 1px solid #ddd;
     border-width: 0 1px;
   }
+  textarea,
+  h3,
+  select {
+    font: inherit;
+  }
   textarea {
     padding: 0 16px 0;
-    font: inherit;
     resize: none;
     flex: 1;
     outline: none;
@@ -37,13 +45,14 @@
     white-space: pre;
     overflow-wrap: nowrap;
   }
+  main > * > div {
+    flex: 1;
+  }
   h3 {
     padding: 16px 16px 0;
     margin: 0;
-    font: inherit;
     position: absolute;
     z-index: 1;
-    color: #999;
   }
   textarea:focus {
     opacity: 1;
@@ -55,6 +64,10 @@
   .error {
     color: rgb(248, 17, 82);
   }
+  select {
+    padding: 4px;
+    margin: -4px 0 0 -4px;
+  }
 </style>
 <main>
   <div>
@@ -62,7 +75,16 @@
     <textarea></textarea>
   </div>
   <div>
-    <h3>javascript</h3>
+    <h3>
+      <select>
+        <option>javascript</option>
+        <option>jsx</option>
+      </select>
+      <label for="excess-fragment">
+        <input type="checkbox" name="excess-fragment" id="excess-fragment" />
+        excess fragments
+      </label>
+    </h3>
     <textarea readonly></textarea>
   </div>
 </main>
@@ -80,17 +102,14 @@
 `;
 </script>
 <script type="module">
+  const { minify } = require("html-minifier"); // ugh
+
   import Writer from "./mustache-jsx.mjs";
   import babelPluginJsxExcessFragment from "./babel-plugin-jsx-excess-fragment.mjs";
 
   const jsx = {
     pragma: "h",
     pragmaFrag: "Fragment",
-  };
-
-  const babelConfig = {
-    presets: ["es2016", ["react", jsx]],
-    plugins: [[babelPluginJsxExcessFragment, jsx]],
   };
 
   const prettierConfig = {
@@ -100,27 +119,70 @@
   };
 
   const envelope = (out) =>
-    `(${jsx.pragma}, ${jsx.pragmaFrag}, value) => (${out})`;
+    `
+    const section = ref => (Array.isArray(ref) ?
+      (ref.length > 0 ? ref : []) :
+      (ref ? [ref] : [])
+    );
+
+    const inverted = ref => (!ref || (Array.isArray(ref) && ref.length === 0));
+
+    (view, ${jsx.pragma}, ${jsx.pragmaFrag}, html) => (${out})`;
 
   const defaultWriter = new Writer();
-  const template = document.querySelector("textarea");
+
+  const [template, output] = document.querySelectorAll("textarea");
+
+  const leaveExcessFragments = () =>
+    document.querySelector("[name=excess-fragment]").checked;
+
+  const toMustacheXhtml = (html) => {
+    const parsed = new DOMParser().parseFromString(html, "text/html");
+    const serialized = new XMLSerializer().serializeToString(parsed);
+    return minify(/<body>([\s\S]*)<\/body>/im.exec(serialized)[1], {
+      removeAttributeQuotes: true,
+      keepClosingSlash: true,
+    });
+  };
 
   function update() {
-    const out = envelope(defaultWriter.render(template.value, {}));
-    const container = document.querySelector("[readonly]");
+    const rendered = envelope(
+      defaultWriter.render(toMustacheXhtml(template.value), {})
+    );
     try {
-      const { code } = Babel.transform(out, babelConfig);
-      container.classList.remove("error");
-      container.textContent = prettier.format(code, prettierConfig);
+      const code =
+        document.querySelector("select").value === "javascript"
+          ? Babel.transform(rendered, {
+              presets: ["es2016", ["react", jsx]],
+              plugins: leaveExcessFragments()
+                ? null
+                : [[babelPluginJsxExcessFragment, jsx]],
+            }).code
+          : rendered;
+      output.classList.remove("error");
+      output.textContent = prettier.format(code, prettierConfig);
     } catch (e) {
-      container.classList.add("error");
-      container.textContent = e.message;
+      output.classList.add("error");
+      output.textContent = e.message;
       console.error(e);
     }
   }
 
-  template.addEventListener("keyup", update);
   template.value = DEFAULT_TEMPLATE;
+
+  template.addEventListener("keyup", update);
+  document
+    .querySelector("select")
+    .addEventListener("change", ({ currentTarget }) => {
+      update();
+      const excessFragment = document.querySelector("[for=excess-fragment]");
+      if (currentTarget.value !== "javascript") {
+        excessFragment.setAttribute("hidden", "");
+      } else {
+        excessFragment.removeAttribute("hidden");
+      }
+    });
+  document.querySelector("[type=checkbox]").addEventListener("change", update);
 
   update();
 </script>
