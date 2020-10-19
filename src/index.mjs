@@ -43,10 +43,10 @@ const toMustacheXhtml = (html) => {
 };
 
 function update() {
-  const rendered = envelope(
-    defaultWriter.render(toMustacheXhtml(template.value), {})
-  );
   try {
+    const rendered = envelope(
+      defaultWriter.render(toMustacheXhtml(template.value), {})
+    );
     const code =
       document.querySelector("select").value === "javascript"
         ? Babel.transform(rendered, {
