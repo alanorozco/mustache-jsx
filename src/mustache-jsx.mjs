@@ -512,7 +512,7 @@ Writer.prototype.renderTokens = function renderTokens(
     if (value !== undefined) buffer += value;
   }
 
-  return `<>${buffer}</>`;
+  return `<>${buffer.replace(/^[\s]+/, "")}</>`;
 };
 
 let nested = 0;
