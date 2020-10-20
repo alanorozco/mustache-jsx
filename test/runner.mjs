@@ -1,13 +1,23 @@
 import fs from "fs";
 import prettier from "prettier";
 import Writer from "../src/mustache-jsx.mjs";
+import xmldom from "xmldom";
 
 const base = "test";
 
 export const cat = (f) => fs.readFileSync(f).toString();
 
 export const convert = (template) =>
-  prettier.format(new Writer().render(template), { parser: "babel" });
+  prettier.format(
+    new Writer().render(
+      template,
+      /* view */ undefined,
+      /* partials */ undefined,
+      /* tags */ undefined,
+      xmldom
+    ),
+    { parser: "babel" }
+  );
 
 export function* all() {
   for (const dir of fs.readdirSync(base)) {

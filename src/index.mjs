@@ -31,22 +31,9 @@ const [template, output] = document.querySelectorAll("textarea");
 const leaveExcessFragments = () =>
   document.querySelector("[name=excess-fragment]").checked;
 
-const toMustacheXhtml = (html) => {
-  const parsed = new DOMParser().parseFromString(html, "text/html");
-  const serialized = new XMLSerializer().serializeToString(parsed);
-  return (
-    /<body>([\s\S]*)<\/body>/im
-      .exec(serialized)[1]
-      // ugly and probably unsafe
-      .replace(/="{{([^"]*)}}"/gim, (_, content) => `={{${content}}}`)
-  );
-};
-
 function update() {
   try {
-    const rendered = envelope(
-      defaultWriter.render(toMustacheXhtml(template.value))
-    );
+    const rendered = envelope(defaultWriter.render(template.value));
     const code =
       document.querySelector("select").value === "javascript"
         ? Babel.transform(rendered, {

@@ -469,9 +469,15 @@ Writer.prototype.parse = function parse(template, tags) {
  * string values: the opening and closing tags used in the template (e.g.
  * [ "<%", "%>" ]). The default is to mustache.tags.
  */
-Writer.prototype.render = function render(template, view, partials, tags) {
+Writer.prototype.render = function render(
+  template,
+  view,
+  partials,
+  tags,
+  xmldomOrWindow
+) {
   nested = 0;
-  var tokens = this.parse(template, tags);
+  var tokens = this.parse(serializeXml(template, xmldomOrWindow), tags);
   return this.renderTokens(tokens, new Context(), partials, template, tags);
 };
 
@@ -673,6 +679,20 @@ mustache.render = function render(template, view, partials, tags) {
 
   return defaultWriter.render(template, view, partials, tags);
 };
+
+function serializeXml(template, { DOMParser, XMLSerializer } = window) {
+  const parsed = new DOMParser().parseFromString(
+    `<html><body>${template}</body></html>`,
+    "text/html"
+  );
+  const serialized = new XMLSerializer().serializeToString(parsed);
+  return (
+    /<body>([\s\S]*)<\/body>/im
+      .exec(serialized)[1]
+      // ugly and probably unsafe
+      .replace(/="{{([^"]*)}}"/gim, (_, content) => `={{${content}}}`)
+  );
+}
 
 // Export the escaping function so that the user may override it.
 // See https://github.com/janl/mustache.js/issues/244

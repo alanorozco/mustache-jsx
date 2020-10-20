@@ -26,8 +26,11 @@
     "rollup": "^2.32.0"
   },
   "ava": {
-		"files": [
+    "files": [
       "!test/runner.mjs"
     ]
+  },
+  "dependencies": {
+    "xmldom": "^0.3.0"
   }
 }
