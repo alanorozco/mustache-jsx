@@ -606,7 +606,12 @@ Writer.prototype.renderPartial = function renderPartial(
 };
 
 Writer.prototype.unescapedValue = function unescapedValue(token, context) {
-  return `{html(${context.lookup(token[1])})}`;
+  let name = token[1];
+  // this happens bc we serialize XML, maybe not a big deal
+  if (name.startsWith(entityMap["&"].slice(1))) {
+    name = name.split(" ")[1];
+  }
+  return `{html(${context.lookup(name)})}`;
 };
 
 Writer.prototype.escapedValue = function escapedValue(token, context) {
