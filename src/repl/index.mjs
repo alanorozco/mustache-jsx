@@ -74,18 +74,19 @@ const [template, output] = Array.from(
 const leaveExcessFragments = () =>
   document.querySelector("[name=excess-fragment]").checked;
 
+const isChecked = (name) => document.querySelector(`[name=${name}]`).checked;
+
 function update() {
   const error = document.querySelector(".error");
   try {
     const rendered = envelope(defaultWriter.render(template.value));
     const code = Babel.transform(rendered, {
-      presets:
-        document.querySelector("select").value === "javascript"
-          ? [["react", jsx]]
-          : null,
+      presets: [...(isChecked("javascript") ? [["react", jsx]] : [])],
       plugins: [
         "syntax-jsx",
-        ...(leaveExcessFragments() ? [] : [babelPluginJsxExcessFragment]),
+        ...(isChecked("excess-fragments")
+          ? []
+          : [babelPluginJsxExcessFragment]),
       ],
     }).code;
     error.setAttribute("hidden", "");
@@ -98,20 +99,8 @@ function update() {
 }
 
 template.value = DEFAULT_TEMPLATE;
-
 template.addEventListener("keyup", update);
-document
-  .querySelector("select")
-  .addEventListener("change", ({ currentTarget }) => {
-    update();
-    Array.from(document.querySelectorAll("[data-only]")).forEach((element) => {
-      if (currentTarget.value !== element.dataset.only) {
-        element.setAttribute("hidden", "");
-      } else {
-        element.removeAttribute("hidden");
-      }
-    });
-  });
+
 Array.from(document.querySelectorAll("[type=checkbox]")).forEach((e) =>
   e.addEventListener("change", update)
 );
