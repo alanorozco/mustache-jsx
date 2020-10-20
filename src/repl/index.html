@@ -81,7 +81,7 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
   h3 > label {
-    margin: 0 24px 0 0;
+    margin: 0 0 0 24px;
   }
   .error {
     color: rgb(248, 17, 82) !important;
@@ -133,17 +133,18 @@
   </div>
   <div>
     <h3>
-      <label for="javascript">
-        <input type="checkbox" name="javascript" id="javascript" />
-        <span>plain javascript</span>
+      jsx
+      <label for="cleanup-fragments">
+        <input type="checkbox" name="cleanup-fragments" id="cleanup-fragments" checked />
+        <span>cleanup fragments</span>
       </label>
-      <label for="excess-fragments">
-        <input type="checkbox" name="excess-fragments" id="excess-fragments" />
-        <span>excess fragments</span>
+      <label for="transpile">
+        <input type="checkbox" name="transpile" id="transpile" />
+        <span>transpile</span>
       </label>
-      <label for="minify">
-        <input type="checkbox" name="minify" id="minify" />
-        <span>minify</span>
+      <label for="mangle">
+        <input type="checkbox" name="mangle" id="mangle" />
+        <span>mangle</span>
       </label>
     </h3>
     <div>

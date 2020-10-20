@@ -79,21 +79,21 @@ const isChecked = (name) => document.querySelector(`[name=${name}]`).checked;
 function update() {
   const error = document.querySelector(".error");
   try {
-    const javascript = isChecked("javascript");
-    const excessFragments = isChecked("excess-fragments");
-    const minify = isChecked("minify");
+    const transpile = isChecked("transpile");
+    const cleanupFragments = isChecked("cleanup-fragments");
+    const mangle = isChecked("mangle");
 
     const rendered = envelope(defaultWriter.render(template.value));
 
     let { code } = Babel.transform(rendered, {
-      presets: [...(javascript ? [["react", jsx]] : [])],
+      presets: [...(transpile ? [["react", jsx]] : [])],
       plugins: [
         "syntax-jsx",
-        ...(excessFragments ? [] : [babelPluginJsxExcessFragment]),
+        ...(cleanupFragments ? [babelPluginJsxExcessFragment] : []),
       ],
     });
 
-    if (javascript && minify) {
+    if (transpile && mangle) {
       code = Terser.minify(code).then(({ code }) => code);
     }
 
