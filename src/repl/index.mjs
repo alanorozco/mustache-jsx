@@ -78,15 +78,18 @@ function update() {
   const error = document.querySelector(".error");
   try {
     const rendered = envelope(defaultWriter.render(template.value));
-    const code =
-      document.querySelector("select").value === "javascript"
-        ? Babel.transform(rendered, {
-            presets: ["es2016", ["react", jsx]],
-            plugins: leaveExcessFragments()
-              ? null
-              : [[babelPluginJsxExcessFragment, jsx]],
-          }).code
-        : rendered;
+    const code = Babel.transform(rendered, {
+      presets:
+        document.querySelector("select").value === "javascript"
+          ? [["react", jsx]]
+          : null,
+      plugins: [
+        "syntax-jsx",
+        ...(leaveExcessFragments()
+          ? []
+          : [[babelPluginJsxExcessFragment, jsx]]),
+      ],
+    }).code;
     error.setAttribute("hidden", "");
     output.value = prettier.format(code, prettierConfig);
   } catch (e) {
