@@ -11,6 +11,7 @@
 <script src="https://cdn.jsdelivr.net/npm/codemirror@5.58.1/mode/javascript/javascript.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/codemirror@5.58.1/mode/xml/xml.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/codemirror@5.58.1/mode/jsx/jsx.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/terser/dist/bundle.min.js"></script>
 <link
   rel="stylesheet"
   href="https://cdn.jsdelivr.net/npm/codemirror@5.58.1/lib/codemirror.css"
@@ -139,6 +140,10 @@
       <label for="excess-fragments">
         <input type="checkbox" name="excess-fragments" id="excess-fragments" />
         <span>excess fragments</span>
+      </label>
+      <label for="minify">
+        <input type="checkbox" name="minify" id="minify" />
+        <span>minify</span>
       </label>
     </h3>
     <div>

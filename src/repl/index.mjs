@@ -49,16 +49,16 @@ const prettierConfig = {
 };
 
 const envelope = (out) =>
-  `
-    const section = (ref, cb) => (Array.isArray(ref) ?
-      ref :
-      (!!ref ? [ref] : [])
-    ).map(cb);
+  `(() => {
+  const section = (ref, cb) => (Array.isArray(ref) ?
+    ref :
+    (!!ref ? [ref] : [])
+  ).map(cb);
 
-    const inverted = ref => (!ref || (Array.isArray(ref) && ref.length === 0));
+  const inverted = ref => (!ref || (Array.isArray(ref) && ref.length === 0));
 
-    self._template = (view, ${jsx.pragma}, ${jsx.pragmaFrag}, html) => (${out})
-    `;
+  self._template = (view, ${jsx.pragma}, ${jsx.pragmaFrag}, html) => (${out})
+})()`;
 
 const defaultWriter = new Writer();
 
@@ -79,18 +79,30 @@ const isChecked = (name) => document.querySelector(`[name=${name}]`).checked;
 function update() {
   const error = document.querySelector(".error");
   try {
+    const javascript = isChecked("javascript");
+    const excessFragments = isChecked("excess-fragments");
+    const minify = isChecked("minify");
+
     const rendered = envelope(defaultWriter.render(template.value));
-    const code = Babel.transform(rendered, {
-      presets: [...(isChecked("javascript") ? [["react", jsx]] : [])],
+
+    let { code } = Babel.transform(rendered, {
+      presets: [...(javascript ? [["react", jsx]] : [])],
       plugins: [
         "syntax-jsx",
-        ...(isChecked("excess-fragments")
-          ? []
-          : [babelPluginJsxExcessFragment]),
+        ...(excessFragments ? [] : [babelPluginJsxExcessFragment]),
       ],
-    }).code;
-    error.setAttribute("hidden", "");
-    output.value = prettier.format(code, prettierConfig);
+    });
+
+    if (javascript && minify) {
+      code = Terser.minify(code).then(({ code }) => code);
+    }
+
+    Promise.resolve(code).then((code) => {
+      output.value = prettier.format(code, prettierConfig);
+
+      error.setAttribute("hidden", "");
+      error.textContent = "";
+    });
   } catch (e) {
     error.removeAttribute("hidden");
     error.textContent = e.message;
