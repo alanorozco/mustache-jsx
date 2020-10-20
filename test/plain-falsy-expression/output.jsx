@@ -1,1 +1,1 @@
-inverted(view("falsy")) && "plain falsy expression";
+inverted(view("falsy")) ? "plain falsy expression" : "";
