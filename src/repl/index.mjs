@@ -85,9 +85,7 @@ function update() {
           : null,
       plugins: [
         "syntax-jsx",
-        ...(leaveExcessFragments()
-          ? []
-          : [[babelPluginJsxExcessFragment, jsx]]),
+        ...(leaveExcessFragments() ? [] : [babelPluginJsxExcessFragment]),
       ],
     }).code;
     error.setAttribute("hidden", "");
