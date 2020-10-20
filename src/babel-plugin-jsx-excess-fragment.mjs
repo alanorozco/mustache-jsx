@@ -1,6 +1,6 @@
-export default function (babel) {
-  const { types: t } = babel;
+const NOT_WHITESPACE = /[^\s]/;
 
+export default function ({ types: t }) {
   return {
     name: "jsx-excess-fragment",
     visitor: {
@@ -11,7 +11,7 @@ export default function (babel) {
         while (
           start < children.length &&
           t.isJSXText(children[start]) &&
-          /^[\s\n]+$/im.test(children[start].value)
+          !NOT_WHITESPACE.test(children[start].value)
         ) {
           start++;
         }
@@ -19,7 +19,7 @@ export default function (babel) {
         while (
           end > start &&
           t.isJSXText(children[end]) &&
-          /^[\s\n]+$/im.test(children[end].value)
+          !NOT_WHITESPACE.test(children[end].value)
         ) {
           end--;
         }
