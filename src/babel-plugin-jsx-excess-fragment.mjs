@@ -10,12 +10,11 @@ export default function ({ types: t }) {
     visitor: {
       JSXFragment(path, state) {
         const { children } = path.node;
-        let start = 0,
-          end;
+        let start = 0;
         while (start < children.length && isJsxWhitespace(children[start])) {
           start++;
         }
-        end = children.length - 1;
+        let end = children.length - 1;
         while (end > start && isJsxWhitespace(children[end])) {
           end--;
         }
