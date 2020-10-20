@@ -45,7 +45,6 @@ const jsx = {
 const prettierConfig = {
   parser: "babel",
   plugins: prettierPlugins,
-  printWidth: 60,
 };
 
 const envelope = (out) =>
