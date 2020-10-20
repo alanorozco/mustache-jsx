@@ -38,15 +38,19 @@ export function* all() {
 }
 
 export function update(create = false) {
-  let created = 0;
+  let wrote = 0;
   for (const [name, input, expectedJsx] of all()) {
-    if (create || !fs.existsSync(expectedJsx)) {
-      fs.writeFileSync(expectedJsx, convert(cat(input)));
-      console.log("created", expectedJsx);
-      created++;
+    const exists = fs.existsSync(expectedJsx);
+    if (create || !exists) {
+      const write = convert(cat(input));
+      if (!exists || cat(expectedJsx) !== write) {
+        fs.writeFileSync(expectedJsx, write);
+        console.log("wrote", expectedJsx);
+        wrote++;
+      }
     }
   }
-  console.warn(`  ${created} tests updated`);
+  console.warn(`  ${wrote} tests updated`);
 }
 
 if (process.argv.includes("--update")) {
