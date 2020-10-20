@@ -76,7 +76,6 @@ const isChecked = (name) => document.querySelector(`[name=${name}]`).checked;
 function update() {
   const error = document.querySelector(".error");
   try {
-    const cleanup = isChecked("cleanup");
     const transpile = isChecked("transpile");
     const mangle = isChecked("mangle");
 
@@ -84,7 +83,7 @@ function update() {
 
     let { code } = Babel.transform(rendered, {
       presets: [...(transpile ? [["react", jsx]] : [])],
-      plugins: ["syntax-jsx", ...(cleanup ? [babelPluginJsxCleanup] : [])],
+      plugins: ["syntax-jsx", babelPluginJsxCleanup],
     });
 
     if (transpile && mangle) {
