@@ -1,13 +1,6 @@
 const NOT_WHITESPACE = /[^\s]/;
 
 /**
- * Hoists single children in fragment to remove the latter when useless.
- *
- *   // from:
- *   <><div>hola</div></div>
- *
- *   // to:
- *   <div>hola</div>
  * @param babel
  */
 export default function ({ types: t }) {
@@ -15,7 +8,7 @@ export default function ({ types: t }) {
     return t.isJSXText(node) && !NOT_WHITESPACE.test(node.value);
   }
 
-  function getSingleChild(path) {
+  function getSingleFragmentChild(path) {
     const { children } = path.node;
     const { length } = children;
     let start, end;
@@ -48,7 +41,11 @@ export default function ({ types: t }) {
     name: "jsx-cleanup",
     visitor: {
       JSXFragment(path) {
-        const child = getSingleChild(path);
+        // Hoists single children in fragment to remove the latter when useless.
+        //   <><div>hola</div></div>
+        //   // to:
+        //   <div>hola</div>
+        const child = getSingleFragmentChild(path);
         if (child) {
           path.replaceWith(child);
         }
@@ -75,7 +72,7 @@ export default function ({ types: t }) {
 
           // inverted(a) && b
           // // to
-          // inverted(a) && b || ''
+          // inverted(a) ? b : ''
           if (
             t.isLogicalExpression(expression) &&
             t.isCallExpression(expression.left)
