@@ -76,12 +76,46 @@
     z-index: 1;
   }
   h3 > label {
-    margin: 0 8px 0 0;
+    margin: 0 24px 0 0;
   }
   .error {
     color: rgb(248, 17, 82) !important;
     flex: 0;
     padding: 16px;
+  }
+  label > input[type="checkbox"] {
+    display: none;
+  }
+  label > input[type="checkbox"] + *::before {
+    content: "";
+    display: inline-block;
+    vertical-align: bottom;
+    width: 16px;
+    height: 16px;
+    margin-right: 10px;
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+  label > input[type="checkbox"]:checked + * {
+    color: white;
+  }
+  label > input[type="checkbox"]:checked + *::before {
+    content: "";
+    color: black;
+    text-align: center;
+    background: white;
+    background-image: url("data:image/svg+xml,%3Csvg height='12' width='12' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 90 69' fill-rule='evenodd' clip-rule='evenodd' shape-rendering='geometricPrecision' text-rendering='geometricPrecision' image-rendering='optimizeQuality'%3E%3Cpath fill-rule='nonzero' d='M0 38l10-13 26 22L78 0l12 11-53 58z'/%3E%3C/svg%3E");
+    background-position: center center;
+    background-repeat: no-repeat;
+    font-weight: bold;
+    border-color: white;
+  }
+  label > input[type="checkbox"] + * {
+    display: inline-block;
+    color: rgba(255, 255, 255, 0.4);
+    line-height: 20px;
   }
 </style>
 <main>
@@ -96,11 +130,11 @@
     <h3>
       <label for="javascript">
         <input type="checkbox" name="javascript" id="javascript" />
-        plain javascript
+        <span>plain javascript</span>
       </label>
       <label for="excess-fragments">
         <input type="checkbox" name="excess-fragments" id="excess-fragments" />
-        excess fragments
+        <span>excess fragments</span>
       </label>
     </h3>
     <div>
