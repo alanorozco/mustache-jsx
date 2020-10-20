@@ -1,5 +1,5 @@
 import babel from "@babel/core";
-import babelPluginJsxExcessFragment from "../src/babel-plugin-jsx-excess-fragment.mjs";
+import babelPluginJsxCleanup from "../src/babel-plugin-jsx-cleanup.mjs";
 import fs from "fs";
 import prettier from "prettier";
 import Writer from "../src/mustache-jsx.mjs";
@@ -20,7 +20,7 @@ export const convert = (template) =>
         xmldom
       ),
       {
-        plugins: ["@babel/plugin-syntax-jsx", babelPluginJsxExcessFragment],
+        plugins: ["@babel/plugin-syntax-jsx", babelPluginJsxCleanup],
       }
     ).code,
     { parser: "babel" }

@@ -11,7 +11,7 @@
           ))}
           {section(view("link", _1_item, _0_list), (_3_link, _i_3) => (
             <li>
-              <a href={`${view("url", _3_link, _1_item, _0_list)}`}>
+              <a href={view("url", _3_link, _1_item, _0_list)}>
                 {view("name", _3_link, _1_item, _0_list)}
               </a>
             </li>

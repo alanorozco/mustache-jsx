@@ -1,5 +1,5 @@
 import Writer from "../mustache-jsx.mjs";
-import babelPluginJsxExcessFragment from "../babel-plugin-jsx-excess-fragment.mjs";
+import babelPluginJsxCleanup from "../babel-plugin-jsx-cleanup.mjs";
 
 CodeMirror.defineMode("mustache", function (config, parserConfig) {
   var mustacheOverlay = {
@@ -76,18 +76,15 @@ const isChecked = (name) => document.querySelector(`[name=${name}]`).checked;
 function update() {
   const error = document.querySelector(".error");
   try {
+    const cleanup = isChecked("cleanup");
     const transpile = isChecked("transpile");
-    const cleanupFragments = isChecked("cleanup-fragments");
     const mangle = isChecked("mangle");
 
     const rendered = envelope(defaultWriter.render(template.value));
 
     let { code } = Babel.transform(rendered, {
       presets: [...(transpile ? [["react", jsx]] : [])],
-      plugins: [
-        "syntax-jsx",
-        ...(cleanupFragments ? [babelPluginJsxExcessFragment] : []),
-      ],
+      plugins: ["syntax-jsx", ...(cleanup ? [babelPluginJsxCleanup] : [])],
     });
 
     if (transpile && mangle) {

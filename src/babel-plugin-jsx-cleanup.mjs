@@ -45,13 +45,29 @@ export default function ({ types: t }) {
   }
 
   return {
-    name: "jsx-excess-fragment",
+    name: "jsx-cleanup",
     visitor: {
       JSXFragment(path) {
         const child = getSingleChild(path);
         if (child) {
           path.replaceWith(child);
         }
+      },
+      TemplateLiteral(path) {
+        // Useless template literal `${x}` to x
+        if (
+          path.node.quasis.length !== 2 ||
+          path.node.expressions.length !== 1
+        ) {
+          return;
+        }
+        if (
+          path.node.quasis[0].value.raw.length > 0 ||
+          path.node.quasis[1].value.raw.length > 0
+        ) {
+          return;
+        }
+        path.replaceWith(path.node.expressions[0]);
       },
     },
   };
