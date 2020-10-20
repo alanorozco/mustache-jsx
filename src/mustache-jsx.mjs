@@ -393,9 +393,6 @@ class Context {
       [top, ...sub] = name.split(".");
     }
 
-    if (sub && sub.length) {
-      sub.unshift("");
-    }
     if (this.locals.length && !top) {
       // if there's a direct reference for {{.}}, use it.
       return this.locals[0];
@@ -404,7 +401,9 @@ class Context {
       top ? `"${top.replace('"', '\\"')}"` : "null",
       ...this.locals,
     ];
-    return `view(${args.join(",")})${sub ? sub.join(".") : ""}`;
+    return `view(${args.join(",")})${
+      sub ? sub.map((sub) => `["${sub.replace('"', '\\"')}"]`).join("") : ""
+    }`;
   }
 
   sub(local) {
