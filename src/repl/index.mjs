@@ -71,9 +71,6 @@ const [template, output] = Array.from(
   })
 );
 
-const leaveExcessFragments = () =>
-  document.querySelector("[name=excess-fragment]").checked;
-
 const isChecked = (name) => document.querySelector(`[name=${name}]`).checked;
 
 function update() {
