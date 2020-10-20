@@ -1,5 +1,5 @@
-import Writer from "./mustache-jsx.mjs";
-import babelPluginJsxExcessFragment from "./babel-plugin-jsx-excess-fragment.mjs";
+import Writer from "../mustache-jsx.mjs";
+import babelPluginJsxExcessFragment from "../babel-plugin-jsx-excess-fragment.mjs";
 
 const jsx = {
   pragma: "h",

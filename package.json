@@ -6,7 +6,7 @@
   "scripts": {
     "test": "ava",
     "test:update": "node test/runner.mjs --update",
-    "copy": "mkdir -p dist && cp -R src/* dist",
+    "copy": "mkdir -p dist && cp -R src/repl/* dist",
     "serve": "npm run copy && rollup -cw & serve dist",
     "dist": "npm run copy && rollup -c"
   },

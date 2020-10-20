@@ -1,5 +1,5 @@
 module.exports = {
-  input: "src/index.mjs",
+  input: "src/repl/index.mjs",
   output: {
     file: "dist/index.js",
     format: "cjs",
