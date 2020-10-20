@@ -699,8 +699,12 @@ function serializeXml(template, { DOMParser, XMLSerializer } = window) {
       .exec(serialized)[1]
       // ugly and probably unsafe
       .replace(
-        /="(((?!{{)[^"])*)({{[^"]*}})(((?!}})[^"])*)"/gim,
-        (_, prefix, _x, part, sufix) => `={\`${prefix}\$${part}${sufix}\`}`
+        /="([^=]+)"/gim,
+        (_, value) =>
+          `={\`${value.replace(
+            /(({{[\^#][^\/]*(((?!{{)[^"])*)}})|({{((?!}})[^"])*)}})/gim,
+            (part) => `\$${part}`
+          )}\`}`
       )
   );
 }
