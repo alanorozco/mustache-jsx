@@ -56,18 +56,51 @@ export default function ({ types: t }) {
       TemplateLiteral(path) {
         // Useless template literal `${x}` to x
         if (
-          path.node.quasis.length !== 2 ||
-          path.node.expressions.length !== 1
+          path.node.quasis.length === 2 &&
+          path.node.expressions.length === 1 &&
+          path.node.quasis[0].value.raw.length === 0 &&
+          path.node.quasis[1].value.raw.length === 0
         ) {
+          path.replaceWith(path.node.expressions[0]);
           return;
         }
-        if (
-          path.node.quasis[0].value.raw.length > 0 ||
-          path.node.quasis[1].value.raw.length > 0
-        ) {
+
+        // Attribute values should be strings.
+        // Handle interpolation so that section expressions are strings.
+        if (!path.findParent((p) => t.isJSXAttribute(p))) {
           return;
         }
-        path.replaceWith(path.node.expressions[0]);
+        for (let i = 0; i < path.node.expressions.length; i++) {
+          const expression = path.node.expressions[i];
+
+          // inverted(a) && b
+          // // to
+          // inverted(a) && b || ''
+          if (
+            t.isLogicalExpression(expression) &&
+            t.isCallExpression(expression.left)
+          ) {
+            if (t.isIdentifier(expression.left.callee, { name: "inverted" })) {
+              path.node.expressions[i] = t.ConditionalExpression(
+                expression.left,
+                expression.right,
+                t.StringLiteral("")
+              );
+            }
+          }
+          // section(a, b)
+          // // to
+          // section(a, b).join('')
+          else if (
+            t.isCallExpression(expression) &&
+            t.isIdentifier(expression.callee, { name: "section" })
+          ) {
+            path.node.expressions[i] = t.CallExpression(
+              t.MemberExpression(expression, t.Identifier("join")),
+              [t.StringLiteral("")]
+            );
+          }
+        }
       },
     },
   };

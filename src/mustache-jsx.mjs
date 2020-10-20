@@ -555,12 +555,12 @@ Writer.prototype.renderInverted = function renderInverted(
 ) {
   // // Use JavaScript's definition of falsy. Include empty arrays.
   // // See https://github.com/janl/mustache.js/issues/186
-  return `{inverted(${context.lookup(token[1])}) ? ${this.renderTokens(
+  return `{inverted(${context.lookup(token[1])}) && ${this.renderTokens(
     token[4],
     context,
     partials,
     originalTemplate
-  )} : ''}`;
+  )}}`;
 };
 
 Writer.prototype.indentPartial = function indentPartial(
