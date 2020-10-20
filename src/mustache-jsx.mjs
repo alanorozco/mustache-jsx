@@ -1,4 +1,4 @@
-const toId = (id) => id.replace(/[^\w]*/, "");
+const toId = (id) => id.replace("_", "__").replace(/[^\w_]/g, "_");
 
 /*!
  * mustache.js - Logic-less {{mustache}} templates with JavaScript
