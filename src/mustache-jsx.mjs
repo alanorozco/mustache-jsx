@@ -396,7 +396,10 @@ class Context {
     if (sub && sub.length) {
       sub.unshift("");
     }
-
+    if (this.locals.length && !top) {
+      // if there's a direct reference for {{.}}, use it.
+      return this.locals[0];
+    }
     const args = [
       top ? `"${top.replace('"', '\\"')}"` : "null",
       ...this.locals,
