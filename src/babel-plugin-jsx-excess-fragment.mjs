@@ -26,18 +26,14 @@ export default function (babel) {
         if (start !== end) {
           return;
         }
-        const child = children[start];
-        if (
-          (t.isLogicalExpression(path.parent) ||
-            t.isExpressionStatement(path.parent)) &&
-          t.isJSXText(child)
-        ) {
-          path.replaceWith(t.StringLiteral(child.value));
-          return;
-        }
-        if (t.isJSXExpressionContainer(child)) {
-          path.replaceWith(child.expression);
-          return;
+        let child = children[start];
+        if (!path.parent.type.startsWith("JSX")) {
+          if (t.isJSXText(child)) {
+            child = t.StringLiteral(child.value);
+          }
+          if (t.isJSXExpressionContainer(child)) {
+            child = child.expression;
+          }
         }
         path.replaceWith(child);
       },
