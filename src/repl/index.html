@@ -74,9 +74,10 @@
     font: inherit;
     z-index: 1;
   }
-  .error,
-  .error .CodeMirror-line span {
+  .error {
     color: rgb(248, 17, 82) !important;
+    flex: 0;
+    padding: 16px;
   }
   select {
     appearance: none;
@@ -99,6 +100,7 @@
     <div>
       <textarea data-theme="paraiso-dark" data-mode="mustache"></textarea>
     </div>
+    <div class="error"></div>
   </div>
   <div>
     <h3>

@@ -75,6 +75,7 @@ const leaveExcessFragments = () =>
   document.querySelector("[name=excess-fragment]").checked;
 
 function update() {
+  const error = document.querySelector(".error");
   try {
     const rendered = envelope(defaultWriter.render(template.value));
     const code =
@@ -86,11 +87,11 @@ function update() {
               : [[babelPluginJsxExcessFragment, jsx]],
           }).code
         : rendered;
-    output.classList.remove("error");
+    error.setAttribute("hidden", "");
     output.value = prettier.format(code, prettierConfig);
   } catch (e) {
-    output.classList.add("error");
-    output.value = e.message;
+    error.removeAttribute("hidden");
+    error.textContent = e.message;
     console.error(e);
   }
 }
