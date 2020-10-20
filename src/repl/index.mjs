@@ -71,7 +71,8 @@ const [template, output] = Array.from(
   })
 );
 
-const isChecked = (name) => document.querySelector(`[name=${name}]`).checked;
+const checkbox = (name) => document.querySelector(`input[name=${name}]`);
+const isChecked = (name) => checkbox(name).checked;
 
 function update() {
   const error = document.querySelector(".error");
@@ -106,8 +107,19 @@ function update() {
 template.value = DEFAULT_TEMPLATE;
 template.addEventListener("keyup", update);
 
+function onCheckboxChange({ currentTarget }) {
+  // mangle requires transpile
+  if (currentTarget.name === "mangle" && currentTarget.checked) {
+    checkbox("transpile").checked = true;
+  }
+  if (currentTarget.name === "transpile" && !currentTarget.checked) {
+    checkbox("mangle").checked = false;
+  }
+  update();
+}
+
 Array.from(document.querySelectorAll("[type=checkbox]")).forEach((e) =>
-  e.addEventListener("change", update)
+  e.addEventListener("change", onCheckboxChange)
 );
 
 update();
