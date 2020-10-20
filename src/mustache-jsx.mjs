@@ -698,7 +698,10 @@ function serializeXml(template, { DOMParser, XMLSerializer } = window) {
     /<body>([\s\S]*)<\/body>/im
       .exec(serialized)[1]
       // ugly and probably unsafe
-      .replace(/="{{([^"]*)}}"/gim, (_, content) => `={{${content}}}`)
+      .replace(
+        /="([^"]*){{([^"]*)}}([^"]*)"/gim,
+        (_, prefix, name, sufix) => `={\`${prefix}\${{${name}}}${sufix}\`}`
+      )
   );
 }
 
