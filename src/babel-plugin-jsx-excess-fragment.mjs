@@ -27,7 +27,11 @@ export default function (babel) {
           return;
         }
         const child = children[start];
-        if (t.isLogicalExpression(path.parent) && t.isJSXText(child)) {
+        if (
+          (t.isLogicalExpression(path.parent) ||
+            t.isExpressionStatement(path.parent)) &&
+          t.isJSXText(child)
+        ) {
           path.replaceWith(t.StringLiteral(child.value));
           return;
         }
