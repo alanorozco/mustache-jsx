@@ -6,44 +6,64 @@
 <script src="https://unpkg.com/prettier@2.1.2/standalone.js"></script>
 <script src="https://unpkg.com/prettier@2.1.2/parser-babel.js"></script>
 <script src="https://unpkg.com/@babel/standalone@7.12.3/babel.min.js"></script>
-<script src="index.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.58.1/lib/codemirror.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.58.1/addon/mode/overlay.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.58.1/mode/javascript/javascript.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.58.1/mode/xml/xml.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.58.1/mode/jsx/jsx.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/codemirror@5.58.1/lib/codemirror.css"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/codemirror@5.58.1/theme/paraiso-dark.css"
+/>
 <style>
   body {
+    background: #2c1f2d;
+    color: #f8f8f2;
     margin: 0;
-    font-size: 15px;
-    font-family: "Cascadia Code", "Fira Code", Menlo, Consolas, monospace;
     line-height: 1.5;
     overflow: hidden;
   }
   main {
     display: flex;
     height: 100%;
-    background: #aaa;
   }
   main > * {
     flex: 1;
     flex-direction: column;
     display: flex;
-    margin: 0 0 0 -1px;
-    border: 1px solid #ddd;
-    border-width: 0 1px;
+    max-width: 50%;
   }
+  body,
   textarea,
   h3,
-  select {
-    font: inherit;
+  select,
+  .CodeMirror {
+    font-family: "Cascadia Code", "Fira Code", Menlo, Consolas, monospace;
+    line-height: 1.5;
+    font-size: 16px;
+  }
+  .CodeMirror {
+    height: 100%;
+    width: 100%;
+  }
+  .CodeMirror pre.CodeMirror-line {
+    padding: 0 8px 0 16px;
+  }
+  .CodeMirror-lines {
+    padding: 16px 0;
   }
   textarea {
-    padding: 0 16px 0;
     resize: none;
-    flex: 1;
+    width: 100%;
+    height: 100%;
     outline: none;
-    opacity: 0.8;
-    border-width: 52px 0;
-    border-color: white;
-    background: white;
     white-space: pre;
     overflow-wrap: nowrap;
+    border: none;
   }
   main > * > div {
     flex: 1;
@@ -51,28 +71,34 @@
   h3 {
     padding: 16px 16px 0;
     margin: 0;
-    position: absolute;
+    font: inherit;
     z-index: 1;
   }
-  textarea:focus {
-    opacity: 1;
-  }
-  textarea::before {
-    display: block;
-    content: attr(data-label);
-  }
-  .error {
-    color: rgb(248, 17, 82);
+  .error,
+  .error .CodeMirror-line span {
+    color: rgb(248, 17, 82) !important;
   }
   select {
-    padding: 4px;
-    margin: -4px 0 0 -4px;
+    appearance: none;
+    padding: 4px 38px 4px 16px;
+    margin: -4px 0 0 -16px;
+    background: rgba(0, 0, 0, 0.2);
+    border: none;
+    color: #fff;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23dddddd%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+      /* linear-gradient(to bottom, #ffffff 0%, #e5e5e5 100%); */
+    background-repeat: no-repeat, repeat;
+    background-position: right 0.7em top 50%, 0 0;
+    background-size: 0.65em auto, 100%;
+    border-radius: 30px;
   }
 </style>
 <main>
   <div>
     <h3>mustache</h3>
-    <textarea></textarea>
+    <div>
+      <textarea data-theme="paraiso-dark" data-mode="mustache"></textarea>
+    </div>
   </div>
   <div>
     <h3>
@@ -85,7 +111,9 @@
         excess fragments
       </label>
     </h3>
-    <textarea readonly></textarea>
+    <div>
+      <textarea data-theme="paraiso-dark" data-mode="jsx" readonly></textarea>
+    </div>
   </div>
 </main>
 <script>
@@ -101,3 +129,4 @@
 </div>
 `;
 </script>
+<script src="index.js" async></script>
