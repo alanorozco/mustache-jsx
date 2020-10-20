@@ -1,6 +1,10 @@
 const NOT_WHITESPACE = /[^\s]/;
 
 export default function ({ types: t }) {
+  function isJsxWhitespace(node) {
+    return t.isJSXText(node) && !NOT_WHITESPACE.test(node.value);
+  }
+
   return {
     name: "jsx-excess-fragment",
     visitor: {
@@ -8,19 +12,11 @@ export default function ({ types: t }) {
         const { children } = path.node;
         let start = 0,
           end;
-        while (
-          start < children.length &&
-          t.isJSXText(children[start]) &&
-          !NOT_WHITESPACE.test(children[start].value)
-        ) {
+        while (start < children.length && isJsxWhitespace(children[start])) {
           start++;
         }
         end = children.length - 1;
-        while (
-          end > start &&
-          t.isJSXText(children[end]) &&
-          !NOT_WHITESPACE.test(children[end].value)
-        ) {
+        while (end > start && isJsxWhitespace(children[end])) {
           end--;
         }
         if (start !== end) {
