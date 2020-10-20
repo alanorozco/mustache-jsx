@@ -1,3 +1,1 @@
-<>
-  <div>{view(null)}</div>
-</>;
+<div>{view(null)}</div>;

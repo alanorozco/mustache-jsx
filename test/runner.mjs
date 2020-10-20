@@ -1,3 +1,5 @@
+import babel from "@babel/core";
+import babelPluginJsxExcessFragment from "../src/babel-plugin-jsx-excess-fragment.mjs";
 import fs from "fs";
 import prettier from "prettier";
 import Writer from "../src/mustache-jsx.mjs";
@@ -9,13 +11,18 @@ export const cat = (f) => fs.readFileSync(f).toString();
 
 export const convert = (template) =>
   prettier.format(
-    new Writer().render(
-      template,
-      /* view */ undefined,
-      /* partials */ undefined,
-      /* tags */ undefined,
-      xmldom
-    ),
+    babel.transformSync(
+      new Writer().render(
+        template,
+        /* view */ undefined,
+        /* partials */ undefined,
+        /* tags */ undefined,
+        xmldom
+      ),
+      {
+        plugins: ["@babel/plugin-syntax-jsx", babelPluginJsxExcessFragment],
+      }
+    ).code,
     { parser: "babel" }
   );
 

@@ -1,1 +1,1 @@
-<>{view(null)}</>;
+view(null);

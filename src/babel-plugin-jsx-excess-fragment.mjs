@@ -31,6 +31,10 @@ export default function (babel) {
           path.replaceWith(t.StringLiteral(child.value));
           return;
         }
+        if (t.isJSXExpressionContainer(child)) {
+          path.replaceWith(child.expression);
+          return;
+        }
         path.replaceWith(child);
       },
     },

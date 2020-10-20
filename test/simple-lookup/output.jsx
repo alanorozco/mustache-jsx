@@ -1,1 +1,1 @@
-<>{view("key")}</>;
+view("key");
