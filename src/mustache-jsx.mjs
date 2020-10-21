@@ -689,7 +689,12 @@ mustache.render = function render(template, view, partials, tags) {
 
 function serializeXml(template, { DOMParser, XMLSerializer } = window) {
   const parsed = new DOMParser().parseFromString(
-    `<html><body>${template}</body></html>`,
+    `<html><body>${template
+      // bound attributes: ugly and probably unsafe
+      .replace(
+        / \[([^=]+)+\]="/gim,
+        (_, attr) => ` data-amp-bind-${attr}="`
+      )}</body></html>`,
     "text/html"
   );
   const serialized = new XMLSerializer().serializeToString(parsed);
