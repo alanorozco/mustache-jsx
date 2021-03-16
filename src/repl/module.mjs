@@ -1,28 +1,24 @@
 const resolvers = {};
 const promises = {};
 
-function moduleReady(id) {
-  if (id in resolvers) {
-    resolvers[id]();
-  }
-}
-
 self.__ = self.__ || [];
 self.__.push = (id) => {
-  Array.prototype.push.call(self.__, id);
-  moduleReady(id);
+  if (id in resolvers) {
+    resolvers[id]();
+    delete resolvers[id];
+  } else {
+    promises[id] = Promise.resolve();
+  }
 };
 
 for (const id of self.__) {
-  moduleReady(id);
+  self.__.push(id);
 }
 
 export function whenModule(id) {
   return (promises[id] =
     promises[id] ||
-    (self.__.includes(id)
-      ? Promise.resolve()
-      : new Promise((resolver) => {
-          resolvers[id] = resolver;
-        })));
+    new Promise((resolver) => {
+      resolvers[id] = resolver;
+    }));
 }
