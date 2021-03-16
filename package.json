@@ -7,8 +7,9 @@
     "test": "ava",
     "test:update": "node test/runner.mjs --update",
     "copy": "mkdir -p dist && cp -R src/repl/* dist",
-    "serve": "npm run copy && rollup -cw & serve dist",
-    "dist": "npm run copy && rollup -c"
+    "build": "esbuild src/repl/index.mjs --bundle --outfile=dist/index.js",
+    "serve": "npm run copy && npm run build -- --watch & serve dist",
+    "dist": "npm run copy && npm run build"
   },
   "repository": {
     "type": "git",
@@ -24,8 +25,8 @@
     "@babel/core": "7.12.3",
     "@babel/plugin-syntax-jsx": "7.12.1",
     "ava": "3.13.0",
-    "prettier": "2.1.2",
-    "rollup": "2.32.0"
+    "esbuild": "0.9.2",
+    "prettier": "2.1.2"
   },
   "ava": {
     "files": [
