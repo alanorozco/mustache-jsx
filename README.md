@@ -1,40 +1,40 @@
 # mustache-jsx
 
-[Turn mustache templates into JSX output functions.](https://mustache-jsx.netlify.app/)
+> [Turn mustache templates into JSX output functions.](https://mustache-jsx.netlify.app/)
 
 ## Development
 
-### local
-
-Runs a watch build and dev server with REPL on [`localhost:5000`](http://localhost:5000).
-
-```
-npm run serve
-```
-
 ### test
 
-Runs all tests in `test/*/input.mustache`. Output file `test/*/output.jsx` is generated in directories that don't have it.
-
-```
+```console
 npm test
 ```
 
-To update every `*.jsx` output file:
+Runs all tests in `test/*/input.mustache`. Output file `test/*/output.jsx` is generated in directories that don't have it.
 
-```
+```console
 npm run test:update
 ```
 
-### dist
+Updates every `*.jsx` test output file.
 
-Builds into `dist/`
+### repl
 
+```console
+npm run serve
 ```
+
+Runs a watch build and dev server with REPL on [`localhost:5000`](http://localhost:5000).
+
+```console
 npm run dist
 ```
 
-## Helpers
+Builds into `dist/`
+
+## Output
+
+### Helpers
 
 Other than JSX pragmas (`createElement`, `Fragment`), runnable templates expect a set of helper functions in scope:
 
