@@ -1,11 +1,11 @@
 const resolvers = {};
 const promises = {};
 
-const moduleReady = (id) => {
+function moduleReady(id) {
   if (id in resolvers) {
     resolvers[id]();
   }
-};
+}
 
 self.__ = self.__ || [];
 self.__.push = (id) => {
