@@ -1,6 +1,7 @@
 import DEFAULT_TEMPLATE from "./default-template.mustache.txt";
 import Writer from "../mustache-jsx.mjs";
 import babelPluginJsxCleanup from "../babel-plugin-jsx-cleanup.mjs";
+import ENVELOPE from "./envelope.template.js";
 
 CodeMirror.defineMode("mustache", function (config, parserConfig) {
   var mustacheOverlay = {
@@ -48,17 +49,16 @@ const prettierConfig = {
   plugins: prettierPlugins,
 };
 
-const envelope = (out) =>
-  `(() => {
-  const section = (ref, cb) => (Array.isArray(ref) ?
-    ref :
-    (!!ref ? [ref] : [])
-  ).map(cb);
-
-  const inverted = ref => (!ref || (Array.isArray(ref) && ref.length === 0));
-
-  self._template = (view, ${jsx.pragma}, ${jsx.pragmaFrag}, html) => (${out})
-})()`;
+const envelope = (out) => {
+  const replacements = {
+    ...jsx,
+    out: `(${out})`,
+  };
+  return ENVELOPE.replace(
+    /__([a-z]\w*)/gi,
+    (match, key) => replacements[key] ?? match
+  );
+};
 
 const defaultWriter = new Writer();
 

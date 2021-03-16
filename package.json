@@ -7,7 +7,7 @@
     "test": "ava",
     "test:update": "node test/runner.mjs --update",
     "copy": "mkdir -p dist && rsync -av --exclude=*.mjs src/repl/ dist",
-    "build": "esbuild src/repl/index.mjs --bundle --outfile=dist/index.js",
+    "build": "esbuild src/repl/index.mjs --bundle --loader:.template.js=text --outfile=dist/index.js",
     "serve": "npm run copy && npm run build -- --watch & serve dist",
     "dist": "npm run copy && npm run build -- --minify"
   },
