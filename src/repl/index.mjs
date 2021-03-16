@@ -1,4 +1,4 @@
-import DEFAULT_TEMPLATE from "./default-template.mustache.txt";
+import DEFAULT_TEMPLATE from "./default.template.mustache";
 import Writer from "../mustache-jsx.mjs";
 import babelPluginJsxCleanup from "../babel-plugin-jsx-cleanup.mjs";
 import ENVELOPE from "./envelope.template.js";
