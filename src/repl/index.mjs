@@ -2,6 +2,7 @@ import DEFAULT_TEMPLATE from "./default.template.mustache";
 import Writer from "../mustache-jsx.mjs";
 import babelPluginJsxCleanup from "../babel-plugin-jsx-cleanup.mjs";
 import ENVELOPE from "./envelope.template.js";
+import { whenModule } from "./module.mjs";
 
 CodeMirror.defineMode("mustache", function (config, parserConfig) {
   var mustacheOverlay = {
@@ -44,11 +45,6 @@ const jsx = {
   pragmaFrag: "Fragment",
 };
 
-const prettierConfig = {
-  parser: "babel",
-  plugins: prettierPlugins,
-};
-
 const envelope = (out) => {
   const replacements = {
     ...jsx,
@@ -82,21 +78,33 @@ function update() {
 
     const rendered = envelope(defaultWriter.render(template.value));
 
-    let { code } = Babel.transform(rendered, {
-      presets: [...(transpile ? [["react", jsx]] : [])],
-      plugins: ["syntax-jsx", babelPluginJsxCleanup],
-    });
+    let code = whenModule("babel").then(
+      () =>
+        Babel.transform(rendered, {
+          presets: [...(transpile ? [["react", jsx]] : [])],
+          plugins: ["syntax-jsx", babelPluginJsxCleanup],
+        }).code
+    );
 
     if (transpile && mangle) {
-      code = Terser.minify(code).then(({ code }) => code);
+      code = code.then((code) =>
+        whenModule("terser").then(() =>
+          Terser.minify(code).then(({ code }) => code)
+        )
+      );
     }
 
-    Promise.resolve(code).then((code) => {
-      output.value = prettier.format(code, prettierConfig);
+    code.then((code) =>
+      whenModule("prettier").then(() => {
+        output.value = prettier.format(code, {
+          parser: "babel",
+          plugins: prettierPlugins,
+        });
 
-      error.setAttribute("hidden", "");
-      error.textContent = "";
-    });
+        error.setAttribute("hidden", "");
+        error.textContent = "";
+      })
+    );
   } catch (e) {
     error.removeAttribute("hidden");
     error.textContent = e.message;
