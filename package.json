@@ -6,10 +6,10 @@
   "scripts": {
     "test": "ava",
     "test:update": "node test/runner.mjs --update",
-    "copy": "mkdir -p dist && cp -R src/repl/* dist",
+    "copy": "mkdir -p dist && rsync -av --exclude=*.mjs src/repl/ dist",
     "build": "esbuild src/repl/index.mjs --bundle --outfile=dist/index.js",
     "serve": "npm run copy && npm run build -- --watch & serve dist",
-    "dist": "npm run copy && npm run build"
+    "dist": "npm run copy && npm run build -- --minify"
   },
   "repository": {
     "type": "git",
