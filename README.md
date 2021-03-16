@@ -1,6 +1,6 @@
 # mustache-jsx
 
-> [Turn mustache templates into JSX output functions.](https://mustache-jsx.netlify.app/)
+[Turn mustache templates into JSX output functions.](https://mustache-jsx.netlify.app/)
 
 ## Development
 
@@ -10,13 +10,13 @@
 npm test
 ```
 
-Runs all tests in `test/*/input.mustache`. Output file `test/*/output.jsx` is generated in directories that don't have it.
+> Runs all tests in `test/*/input.mustache`. Output file `test/*/output.jsx` is generated in directories that don't have it.
 
 ```console
 npm run test:update
 ```
 
-Updates every `*.jsx` test output file.
+> Updates every `*.jsx` test output file.
 
 ### repl
 
@@ -24,13 +24,13 @@ Updates every `*.jsx` test output file.
 npm run serve
 ```
 
-Runs a watch build and dev server with REPL on [`localhost:5000`](http://localhost:5000).
+> Runs a watch build and dev server with REPL on [`localhost:5000`](http://localhost:5000).
 
 ```console
 npm run dist
 ```
 
-Builds into `dist/`
+> Builds into `dist/`
 
 ## Output
 
