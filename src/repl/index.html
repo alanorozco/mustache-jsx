@@ -1,8 +1,6 @@
 <title>mustache-jsx</title>
-<link
-  rel="icon"
-  href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨🏻</text></svg>"
-/>
+<link rel="icon"
+  href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨🏻</text></svg>" />
 <script src="https://cdn.jsdelivr.net/npm/prettier@2.1.2/standalone.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/prettier@2.1.2/parser-babel.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.12.3/babel.min.js"></script>
@@ -12,14 +10,8 @@
 <script src="https://cdn.jsdelivr.net/npm/codemirror@5.58.1/mode/xml/xml.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/codemirror@5.58.1/mode/jsx/jsx.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/terser/dist/bundle.min.js"></script>
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/codemirror@5.58.1/lib/codemirror.css"
-/>
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/codemirror@5.58.1/theme/paraiso-dark.css"
-/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.58.1/lib/codemirror.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.58.1/theme/paraiso-dark.css" />
 <style>
   body {
     background: #2f1e2e;
@@ -28,19 +20,23 @@
     line-height: 1.5;
     overflow: hidden;
   }
+
   a {
     color: inherit;
   }
+
   main {
     display: flex;
     height: 100%;
   }
-  main > * {
+
+  main>* {
     flex: 1;
     flex-direction: column;
     display: flex;
     max-width: 50%;
   }
+
   body,
   textarea,
   h3,
@@ -51,16 +47,20 @@
     line-height: 1.5;
     font-size: 14px;
   }
+
   .CodeMirror {
     height: 100%;
     width: 100%;
   }
+
   .CodeMirror pre.CodeMirror-line {
     padding: 0 8px 0 16px;
   }
+
   .CodeMirror-lines {
     padding: 12px 0;
   }
+
   textarea {
     resize: none;
     width: 100%;
@@ -72,15 +72,18 @@
     background: transparent;
     color: inherit;
   }
-  main > * > div {
+
+  main>*>div {
     flex: 1;
     min-height: 0;
   }
+
   .error {
     color: rgb(248, 17, 82) !important;
     flex: 0;
     padding: 16px;
   }
+
   h3 {
     display: flex;
     padding: 12px 16px;
@@ -90,13 +93,16 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     line-height: 20px;
   }
-  h3 > label {
+
+  h3>label {
     margin: 0 0 0 24px;
   }
-  label > input[type="checkbox"] {
+
+  label>input[type="checkbox"] {
     display: none;
   }
-  label > input[type="checkbox"] + *::before {
+
+  label>input[type="checkbox"]+*::before {
     content: "";
     display: inline-block;
     vertical-align: bottom;
@@ -108,10 +114,12 @@
     border-width: 1px;
     border-color: rgba(255, 255, 255, 0.4);
   }
-  label > input[type="checkbox"]:checked + * {
+
+  label>input[type="checkbox"]:checked+* {
     color: #b9b6b0;
   }
-  label > input[type="checkbox"]:checked + *::before {
+
+  label>input[type="checkbox"]:checked+*::before {
     content: "";
     color: black;
     text-align: center;
@@ -120,7 +128,8 @@
     font-weight: bold;
     border-color: #b9b6b0;
   }
-  label > input[type="checkbox"] + * {
+
+  label>input[type="checkbox"]+* {
     display: inline-block;
     color: rgba(255, 255, 255, 0.4);
   }
