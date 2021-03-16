@@ -1,3 +1,4 @@
+import DEFAULT_TEMPLATE from "./default-template.mustache.txt";
 import Writer from "../mustache-jsx.mjs";
 import babelPluginJsxCleanup from "../babel-plugin-jsx-cleanup.mjs";
 
