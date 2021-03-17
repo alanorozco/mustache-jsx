@@ -18,6 +18,20 @@ export function run(element, template, data) {
     script,
   });
   const iframe = document.createElement("iframe");
+
   iframe.srcdoc = srcdoc;
-  element.replaceChild(iframe, element.firstElementChild);
+  iframe.classList.add("offscreen");
+
+  const onLoad = () => {
+    const { firstElementChild } = element;
+    if (firstElementChild && firstElementChild !== iframe) {
+      element.removeChild(firstElementChild);
+    }
+    iframe.classList.remove("offscreen");
+    iframe.removeEventListener("load", onLoad);
+  };
+
+  iframe.addEventListener("load", onLoad);
+
+  element.appendChild(iframe);
 }

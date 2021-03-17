@@ -144,6 +144,12 @@
     width: 100%;
     height: 100%;
   }
+
+  iframe.offscreen {
+    opacity: 0;
+    position: fixed;
+    pointer-events: none;
+  }
 </style>
 <main>
   <div>
@@ -181,10 +187,7 @@
       <textarea data-theme="paraiso-dark" data-mode="application/json">
 {}</textarea>
     </div>
-    <div id="run-eval">
-      <!-- needs a firstElementChild -->
-      <div></div>
-    </div>
+    <div id="run-eval"></div>
   </div>
 </main>
 <script src="index.js" async></script>
