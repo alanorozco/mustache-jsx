@@ -24,7 +24,7 @@
   "devDependencies": {
     "@babel/core": "7.12.3",
     "@babel/plugin-syntax-jsx": "7.12.1",
-    "ava": "3.13.0",
+    "ava": "3.15.0",
     "download": "8.0.0",
     "esbuild": "0.9.3",
     "fs-extra": "9.1.0",
