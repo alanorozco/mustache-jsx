@@ -1,4 +1,5 @@
-import DEFAULT_TEMPLATE from "./default.template.mustache";
+import DEFAULT_TEMPLATE from "./default/template.mustache";
+import DEFAULT_DATA from "./default/data.json";
 import Writer from "../mustache-jsx.mjs";
 import babelPluginJsxCleanup from "../babel-plugin-jsx-cleanup.mjs";
 import { whenModule } from "./module.mjs";
@@ -108,6 +109,11 @@ function updateRunner() {
   });
 }
 
+dataInput.value = JSON.stringify(
+  DEFAULT_DATA,
+  /* replacer */ undefined,
+  /* space */ 2
+);
 dataInput.addEventListener("keyup", update);
 
 function toggleRunPanel(visible) {

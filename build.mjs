@@ -104,7 +104,7 @@ async function build(flags) {
       bundle: true,
       minify: flags.minify,
       loader: {
-        ".template.mustache": "text",
+        ".mustache": "text",
         ".template.js": "text",
       },
       watch: flags.watch && {
