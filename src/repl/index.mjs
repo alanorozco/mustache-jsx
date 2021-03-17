@@ -80,28 +80,14 @@ function formatAsync(code, options) {
 }
 
 function updateCode() {
-  try {
-    let code = defaultWriter.render(template.value);
+  let code = defaultWriter.render(template.value);
 
-    code = transformAsync(code, isChecked("transpile"));
-    code = code.then((code) => formatAsync(code, { parser: "babel" }));
+  code = transformAsync(code, isChecked("transpile"));
+  code = code.then((code) => formatAsync(code, { parser: "babel" }));
 
-    code.then((code) => {
-      output.value = code;
-
-      error.setAttribute("hidden", "");
-      error.textContent = "";
-    });
-  } catch (e) {
-    showError(e);
-  }
-}
-
-function showError(e) {
-  const error = document.querySelector(".error");
-  error.removeAttribute("hidden");
-  error.textContent = e.message;
-  console.error(e);
+  return code.then((code) => {
+    output.value = code;
+  });
 }
 
 template.value = DEFAULT_TEMPLATE;
@@ -113,14 +99,8 @@ function updateRunner() {
   if (!displayed) {
     return;
   }
-  let data;
-  try {
-    data = JSON.parse(dataInput.value);
-  } catch (e) {
-    showError(e);
-    return;
-  }
-  transformAsync(
+  const data = JSON.parse(dataInput.value);
+  return transformAsync(
     defaultWriter.render(template.value),
     /* transpile */ true
   ).then((code) => {
@@ -128,7 +108,7 @@ function updateRunner() {
   });
 }
 
-dataInput.addEventListener("keyup", updateRunner);
+dataInput.addEventListener("keyup", update);
 
 function toggleRunPanel(visible) {
   const panel = document.getElementById("run-panel");
@@ -141,8 +121,26 @@ function toggleRunPanel(visible) {
 }
 
 function update() {
-  updateCode();
-  updateRunner();
+  try {
+    Promise.all([updateCode(), updateRunner()]).then(
+      () => showError(null),
+      (e) => showError(e)
+    );
+  } catch (e) {
+    showError(e);
+  }
+}
+
+function showError(e) {
+  const error = document.querySelector(".error");
+  if (!e) {
+    error.setAttribute("hidden", "");
+    error.textContent = "";
+    return;
+  }
+  error.removeAttribute("hidden");
+  error.textContent = e.message;
+  console.error(e);
 }
 
 Array.from(document.querySelectorAll("[type=checkbox]")).forEach((e) =>
