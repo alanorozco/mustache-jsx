@@ -1,7 +1,6 @@
 import DEFAULT_TEMPLATE from "./default.template.mustache";
 import Writer from "../mustache-jsx.mjs";
 import babelPluginJsxCleanup from "../babel-plugin-jsx-cleanup.mjs";
-import ENVELOPE from "./envelope.template.js";
 import { whenModule } from "./module.mjs";
 
 CodeMirror.defineMode("mustache", function (config, parserConfig) {
@@ -45,17 +44,6 @@ const jsx = {
   pragmaFrag: "Fragment",
 };
 
-const envelope = (out) => {
-  const replacements = {
-    ...jsx,
-    out: `(${out})`,
-  };
-  return ENVELOPE.replace(
-    /__([a-z]\w*)/gi,
-    (match, key) => replacements[key] ?? match
-  );
-};
-
 const defaultWriter = new Writer();
 
 const [template, output] = Array.from(
@@ -91,7 +79,7 @@ function formatAsync(code, options) {
 
 function update() {
   try {
-    let code = envelope(defaultWriter.render(template.value));
+    let code = defaultWriter.render(template.value);
 
     code = transformAsync(code, isChecked("transpile"));
     code = code.then((code) => formatAsync(code, { parser: "babel" }));
