@@ -1,5 +1,5 @@
 import test from "ava";
-import { cat, convert, all, update } from "./test/runner.mjs";
+import { cat, convert, all, update } from "../test/runner.mjs";
 
 update();
 
