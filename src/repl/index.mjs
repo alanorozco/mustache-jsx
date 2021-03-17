@@ -62,13 +62,13 @@ const checkbox = (name) => document.querySelector(`input[name=${name}]`);
 const isChecked = (name) => checkbox(name).checked;
 
 function transformAsync(code, transpile) {
-  return whenModule("babel").then(
-    () =>
-      Babel.transform(code, {
-        presets: [...(transpile ? [["react", jsx]] : [])],
-        plugins: ["syntax-jsx", babelPluginJsxCleanup],
-      }).code
-  );
+  return whenModule("babel").then(() => {
+    const { Babel, babelPresetReact, babelPluginSyntaxJsx } = self.__babel;
+    return Babel.transform(code, {
+      presets: [...(transpile ? [[babelPresetReact, jsx]] : [])],
+      plugins: [babelPluginSyntaxJsx, babelPluginJsxCleanup],
+    }).code;
+  });
 }
 
 function formatAsync(code, options) {

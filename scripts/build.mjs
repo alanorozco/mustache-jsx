@@ -46,13 +46,12 @@ async function generateUnpkgBundles(flags) {
       "codemirror/theme/paraiso-dark.css",
     ],
     "prettier.js": ["prettier/standalone.js", "prettier/parser-babel.js"],
-    "babel.js": ["@babel/standalone/babel.min.js"],
   };
   await tempy.directory.task(async (dir) => {
-    for (const [filename, srcs] of Object.entries(unpkgBundles)) {
-      const [id, type] = filename.split(".");
+    const modules = {};
 
-      let content = (
+    for (const [filename, srcs] of Object.entries(unpkgBundles)) {
+      const content = (
         await Promise.all(
           srcs.map(async (src) => {
             const url = `https://unpkg.com/${src}`;
@@ -66,6 +65,19 @@ async function generateUnpkgBundles(flags) {
         )
       ).join("\n");
 
+      modules[filename] = content;
+    }
+
+    const babelBrowserTemp = `${dir}/babel.js`;
+    execSync(
+      `npx browserify src/repl/babel-browser/index.js -o ${babelBrowserTemp}`
+    );
+    modules["babel.js"] = fs.readFileSync(babelBrowserTemp, {
+      encoding: "utf-8",
+    });
+
+    for (let [filename, content] of Object.entries(modules)) {
+      const [id, type] = filename.split(".");
       if (type === "js") {
         content = envelope(id, content);
       }
@@ -121,7 +133,6 @@ async function build(flags) {
     })
   );
 }
-
 const { flags } = meow(
   `
   Usage:
