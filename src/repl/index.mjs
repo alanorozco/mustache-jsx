@@ -96,9 +96,14 @@ template.addEventListener("keyup", update);
 
 function updateRunner() {
   const displayed = checkbox("run").checked;
-  toggleRunPanel(displayed);
+  toggle(document.getElementById("run-panel"), displayed);
   if (!displayed) {
     return;
+  }
+  const showData = checkbox("show-data").checked;
+  toggle(document.getElementById("run-data"), showData);
+  if (showData) {
+    dataInput.refresh();
   }
   const data = JSON.parse(dataInput.value);
   return transformAsync(
@@ -116,13 +121,11 @@ dataInput.value = JSON.stringify(
 );
 dataInput.addEventListener("keyup", update);
 
-function toggleRunPanel(visible) {
-  const panel = document.getElementById("run-panel");
+function toggle(element, visible) {
   if (visible) {
-    panel.removeAttribute("hidden");
-    dataInput.refresh();
+    element.removeAttribute("hidden");
   } else {
-    panel.setAttribute("hidden", "");
+    element.setAttribute("hidden", "");
   }
 }
 
