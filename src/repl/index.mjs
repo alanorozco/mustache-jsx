@@ -70,46 +70,48 @@ const [template, output] = Array.from(
 const checkbox = (name) => document.querySelector(`input[name=${name}]`);
 const isChecked = (name) => checkbox(name).checked;
 
+function transformAsync(code, transpile) {
+  return whenModule("babel").then(
+    () =>
+      Babel.transform(code, {
+        presets: [...(transpile ? [["react", jsx]] : [])],
+        plugins: ["syntax-jsx", babelPluginJsxCleanup],
+      }).code
+  );
+}
+
+function formatAsync(code, options) {
+  return whenModule("prettier").then(() =>
+    prettier.format(code, {
+      ...options,
+      plugins: prettierPlugins,
+    })
+  );
+}
+
 function update() {
-  const error = document.querySelector(".error");
   try {
-    const transpile = isChecked("transpile");
-    const mangle = isChecked("mangle");
+    let code = envelope(defaultWriter.render(template.value));
 
-    const rendered = envelope(defaultWriter.render(template.value));
+    code = transformAsync(code, isChecked("transpile"));
+    code = code.then((code) => formatAsync(code, { parser: "babel" }));
 
-    let code = whenModule("babel").then(
-      () =>
-        Babel.transform(rendered, {
-          presets: [...(transpile ? [["react", jsx]] : [])],
-          plugins: ["syntax-jsx", babelPluginJsxCleanup],
-        }).code
-    );
+    code.then((code) => {
+      output.value = code;
 
-    if (transpile && mangle) {
-      code = code.then((code) =>
-        whenModule("terser").then(() =>
-          Terser.minify(code).then(({ code }) => code)
-        )
-      );
-    }
-
-    code.then((code) =>
-      whenModule("prettier").then(() => {
-        output.value = prettier.format(code, {
-          parser: "babel",
-          plugins: prettierPlugins,
-        });
-
-        error.setAttribute("hidden", "");
-        error.textContent = "";
-      })
-    );
+      error.setAttribute("hidden", "");
+      error.textContent = "";
+    });
   } catch (e) {
-    error.removeAttribute("hidden");
-    error.textContent = e.message;
-    console.error(e);
+    showError(e);
   }
+}
+
+function showError(e) {
+  const error = document.querySelector(".error");
+  error.removeAttribute("hidden");
+  error.textContent = e.message;
+  console.error(e);
 }
 
 template.value = DEFAULT_TEMPLATE;

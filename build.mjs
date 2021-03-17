@@ -47,7 +47,6 @@ async function generateUnpkgBundles(flags) {
     ],
     "prettier.js": ["prettier/standalone.js", "prettier/parser-babel.js"],
     "babel.js": ["@babel/standalone/babel.min.js"],
-    "terser.js": ["terser/dist/bundle.min.js"],
   };
   await tempy.directory.task(async (dir) => {
     for (const [filename, srcs] of Object.entries(unpkgBundles)) {
