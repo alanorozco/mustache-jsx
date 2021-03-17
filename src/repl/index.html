@@ -88,8 +88,10 @@
     padding: 16px;
   }
 
-  h3 {
+  h3,
+  #toolbar {
     display: flex;
+    flex-direction: row;
     padding: 12px 16px;
     margin: 0;
     font: inherit;
@@ -98,8 +100,17 @@
     line-height: 20px;
   }
 
-  h3>label {
+  h3>label,
+  #toolbar>label {
     margin: 0 0 0 24px;
+  }
+
+  #toolbar {
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 2;
+    border-bottom: none;
   }
 
   label>input[type="checkbox"] {
@@ -152,6 +163,17 @@
   }
 </style>
 <main>
+  <div id="toolbar">
+    <label for="run" style="margin-right: 20px">
+      <input type="checkbox" name="run" id="run" />
+      <span>run</span>
+    </label>
+    <div>
+      <a href="https://github.com/alanorozco/mustache-jsx" target="blank">
+        github
+      </a>
+    </div>
+  </div>
   <div>
     <h3>mustache</h3>
     <div>
@@ -166,15 +188,6 @@
         <input type="checkbox" name="transpile" id="transpile" />
         <span>transpile</span>
       </label>
-      <label for="run">
-        <input type="checkbox" name="run" id="run" />
-        <span>run</span>
-      </label>
-      <div style="margin: 0 0 0 auto">
-        <a href="https://github.com/alanorozco/mustache-jsx" target="blank">
-          github
-        </a>
-      </div>
     </h3>
     <div>
       <textarea data-theme="paraiso-dark" data-mode="jsx" readonly>
