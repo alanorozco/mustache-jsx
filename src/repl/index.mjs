@@ -2,6 +2,7 @@ import DEFAULT_TEMPLATE from "./default.template.mustache";
 import Writer from "../mustache-jsx.mjs";
 import babelPluginJsxCleanup from "../babel-plugin-jsx-cleanup.mjs";
 import { whenModule } from "./module.mjs";
+import { run } from "./run.mjs";
 
 CodeMirror.defineMode("mustache", function (config, parserConfig) {
   var mustacheOverlay = {
@@ -33,6 +34,7 @@ function upgradeTextarea(element, options) {
     set value(value) {
       doc.setValue(value);
     },
+    refresh: doc.refresh.bind(doc),
     addEventListener: doc.on.bind(doc),
     removeEventListener: doc.off.bind(doc),
     classList: element.parentElement.classList,
@@ -46,7 +48,7 @@ const jsx = {
 
 const defaultWriter = new Writer();
 
-const [template, output] = Array.from(
+const [template, output, dataInput] = Array.from(
   document.querySelectorAll("textarea")
 ).map((element) =>
   upgradeTextarea(element, {
@@ -77,7 +79,7 @@ function formatAsync(code, options) {
   );
 }
 
-function update() {
+function updateCode() {
   try {
     let code = defaultWriter.render(template.value);
 
@@ -105,19 +107,46 @@ function showError(e) {
 template.value = DEFAULT_TEMPLATE;
 template.addEventListener("keyup", update);
 
-function onCheckboxChange({ currentTarget }) {
-  // mangle requires transpile
-  if (currentTarget.name === "mangle" && currentTarget.checked) {
-    checkbox("transpile").checked = true;
+function updateRunner() {
+  const displayed = checkbox("run").checked;
+  toggleRunPanel(displayed);
+  if (!displayed) {
+    return;
   }
-  if (currentTarget.name === "transpile" && !currentTarget.checked) {
-    checkbox("mangle").checked = false;
+  let data;
+  try {
+    data = JSON.parse(dataInput.value);
+  } catch (e) {
+    showError(e);
+    return;
   }
-  update();
+  transformAsync(
+    defaultWriter.render(template.value),
+    /* transpile */ true
+  ).then((code) => {
+    run(document.getElementById("run-eval"), code, data);
+  });
+}
+
+dataInput.addEventListener("keyup", updateRunner);
+
+function toggleRunPanel(visible) {
+  const panel = document.getElementById("run-panel");
+  if (visible) {
+    panel.removeAttribute("hidden");
+    dataInput.refresh();
+  } else {
+    panel.setAttribute("hidden", "");
+  }
+}
+
+function update() {
+  updateCode();
+  updateRunner();
 }
 
 Array.from(document.querySelectorAll("[type=checkbox]")).forEach((e) =>
-  e.addEventListener("change", onCheckboxChange)
+  e.addEventListener("change", update)
 );
 
 update();

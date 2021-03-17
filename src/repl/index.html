@@ -10,6 +10,10 @@
 <script async src="./babel.js"></script>
 <link rel="stylesheet" href="./codemirror.css" />
 <style>
+  [hidden] {
+    display: none;
+  }
+
   body {
     background: #2f1e2e;
     color: #b9b6b0;
@@ -133,6 +137,13 @@
     display: inline-block;
     color: rgba(255, 255, 255, 0.4);
   }
+
+  iframe {
+    border: none;
+    background: white;
+    width: 100%;
+    height: 100%;
+  }
 </style>
 <main>
   <div>
@@ -149,6 +160,10 @@
         <input type="checkbox" name="transpile" id="transpile" />
         <span>transpile</span>
       </label>
+      <label for="run">
+        <input type="checkbox" name="run" id="run" />
+        <span>run</span>
+      </label>
       <div style="margin: 0 0 0 auto">
         <a href="https://github.com/alanorozco/mustache-jsx" target="blank">
           github
@@ -156,7 +171,19 @@
       </div>
     </h3>
     <div>
-      <textarea data-theme="paraiso-dark" data-mode="jsx" readonly>...</textarea>
+      <textarea data-theme="paraiso-dark" data-mode="jsx" readonly>
+...</textarea>
+    </div>
+  </div>
+  <div id="run-panel" hidden>
+    <h3>data</h3>
+    <div>
+      <textarea data-theme="paraiso-dark" data-mode="application/json">
+{}</textarea>
+    </div>
+    <div id="run-eval">
+      <!-- needs a firstElementChild -->
+      <div></div>
     </div>
   </div>
 </main>
