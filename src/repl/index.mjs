@@ -1,9 +1,8 @@
 import DEFAULT_TEMPLATE from "./default/template.mustache";
 import DEFAULT_DATA from "./default/data.json";
 import Writer from "../mustache-jsx.mjs";
-import babelPluginJsxCleanup from "../babel-plugin-jsx-cleanup.mjs";
-import { whenModule } from "./module.mjs";
 import { run } from "./run.mjs";
+import { transform } from "./code.mjs";
 
 CodeMirror.defineMode("mustache", function (config, parserConfig) {
   var mustacheOverlay = {
@@ -42,11 +41,6 @@ function upgradeTextarea(element, options) {
   };
 }
 
-const jsx = {
-  pragma: "h",
-  pragmaFrag: "Fragment",
-};
-
 const defaultWriter = new Writer();
 
 const [template, output, dataInput] = Array.from(
@@ -61,32 +55,13 @@ const [template, output, dataInput] = Array.from(
 const checkbox = (name) => document.querySelector(`input[name=${name}]`);
 const isChecked = (name) => checkbox(name).checked;
 
-function transformAsync(code, transpile) {
-  return whenModule("babel").then(() => {
-    const { Babel, babelPresetReact, babelPluginSyntaxJsx } = self.__babel;
-    return Babel.transform(code, {
-      presets: [...(transpile ? [[babelPresetReact, jsx]] : [])],
-      plugins: [babelPluginSyntaxJsx, babelPluginJsxCleanup],
-    }).code;
-  });
-}
-
-function formatAsync(code, options) {
-  return whenModule("prettier").then(() =>
-    prettier.format(code, {
-      ...options,
-      plugins: prettierPlugins,
-    })
-  );
-}
-
 function updateCode() {
   let code = defaultWriter.render(template.value);
 
-  code = transformAsync(code, isChecked("transpile"));
-  code = code.then((code) => formatAsync(code, { parser: "babel" }));
-
-  return code.then((code) => {
+  return transform(code, {
+    format: true,
+    transpile: isChecked("transpile"),
+  }).then((code) => {
     output.value = code;
   });
 }
@@ -106,10 +81,9 @@ function updateRunner() {
     dataInput.refresh();
   }
   const data = JSON.parse(dataInput.value);
-  return transformAsync(
-    defaultWriter.render(template.value),
-    /* transpile */ true
-  ).then((code) => {
+  return transform(defaultWriter.render(template.value), {
+    transpile: true,
+  }).then(({ code }) => {
     run(document.getElementById("run-eval"), code, data);
   });
 }

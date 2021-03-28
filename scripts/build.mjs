@@ -111,8 +111,8 @@ async function build(flags) {
 
   await step("built", () =>
     esbuild.build({
-      entryPoints: ["src/repl/index.mjs"],
-      outfile: `${dist}/index.js`,
+      entryPoints: ["src/repl/index.mjs", "src/repl/worker.mjs"],
+      outdir: dist,
       bundle: true,
       minify: flags.minify,
       loader: {
