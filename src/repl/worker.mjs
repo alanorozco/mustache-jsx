@@ -1,44 +1,38 @@
 import babelPluginJsxCleanup from "../babel-plugin-jsx-cleanup.mjs";
-import { whenModule } from "./module.mjs";
+
+importScripts(
+  "https://unpkg.com/prettier/standalone.js",
+  "https://unpkg.com/prettier/parser-babel.js",
+  "https://unpkg.com/@babel/standalone/babel.min.js"
+);
 
 const jsx = {
   pragma: "h",
   pragmaFrag: "Fragment",
 };
 
-function transformAsync(code, transpile) {
-  return whenModule("babel").then(() => {
-    const { Babel, babelPresetReact, babelPluginSyntaxJsx } = self.__babel;
-    return Babel.transform(code, {
-      presets: [...(transpile ? [[babelPresetReact, jsx]] : [])],
-      plugins: [babelPluginSyntaxJsx, babelPluginJsxCleanup],
-    }).code;
+function transformBabel(code, transpile) {
+  return Babel.transform(code, {
+    presets: [...(transpile ? [["react", jsx]] : [])],
+    plugins: ["syntax-jsx", babelPluginJsxCleanup],
+  }).code;
+}
+
+function formatPrettier(code, options) {
+  return prettier.format(code, {
+    ...options,
+    plugins: prettierPlugins,
   });
 }
-
-function formatAsync(code, options) {
-  return whenModule("prettier").then(() =>
-    prettier.format(code, {
-      ...options,
-      plugins: prettierPlugins,
-    })
-  );
-}
-
-importScripts("prettier.js", "babel.js");
 
 self.onmessage = (e) => {
   let { id, code, transpile = false, format = false } = e.data;
 
-  let codePromise = transformAsync(code, transpile);
+  code = transformBabel(code, transpile);
 
   if (format) {
-    codePromise = codePromise.then((code) =>
-      formatAsync(code, { parser: "babel" })
-    );
+    code = formatPrettier(code, { parser: "babel" });
   }
 
-  codePromise.then((code) => {
-    self.postMessage({ id, code });
-  });
+  self.postMessage({ id, code });
 };

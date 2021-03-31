@@ -9,9 +9,6 @@ import { red, cyan } from "kleur/colors";
 
 const dist = "dist";
 
-const envelope = (id, src) =>
-  `${src}\n(self.__ = self.__ || []).push("${id}");`;
-
 const nsPerSec = Math.pow(1000, 3);
 
 function formatNanoSeconds(time) {
@@ -39,65 +36,6 @@ async function step(pastSentence, activity) {
   return result;
 }
 
-async function generateUnpkgBundles(flags) {
-  const unpkgBundles = {
-    "codemirror.css": [
-      "codemirror/lib/codemirror.css",
-      "codemirror/theme/paraiso-dark.css",
-    ],
-    "prettier.js": ["prettier/standalone.js", "prettier/parser-babel.js"],
-  };
-  await tempy.directory.task(async (dir) => {
-    const modules = {};
-
-    for (const [filename, srcs] of Object.entries(unpkgBundles)) {
-      const content = (
-        await Promise.all(
-          srcs.map(async (src) => {
-            const url = `https://unpkg.com/${src}`;
-            try {
-              return await download(url);
-            } catch (e) {
-              e.message = `[${url}]: ${e.message}`;
-              throw e;
-            }
-          })
-        )
-      ).join("\n");
-
-      modules[filename] = content;
-    }
-
-    const babelBrowserTemp = `${dir}/babel.js`;
-    execSync(
-      `npx browserify src/repl/babel-browser/index.js -o ${babelBrowserTemp}`
-    );
-    modules["babel.js"] = fs.readFileSync(babelBrowserTemp, {
-      encoding: "utf-8",
-    });
-
-    for (let [filename, content] of Object.entries(modules)) {
-      const [id, type] = filename.split(".");
-      if (type === "js") {
-        content = envelope(id, content);
-      }
-
-      const infile = `${dir}/${filename}`;
-      const outfile = `${dist}/${filename}`;
-
-      fs.writeFileSync(infile, content);
-
-      await esbuild.build({
-        entryPoints: [infile],
-        outfile,
-        logLevel: "error",
-        bundle: false,
-        minify: flags.minify,
-      });
-    }
-  });
-}
-
 async function copyAssets() {
   await step("copied assets", () =>
     execSync(`rsync -av --exclude=*.mjs src/repl/ ${dist}`)
@@ -107,11 +45,13 @@ async function copyAssets() {
 async function build(flags) {
   copyAssets();
 
-  step("built unpkg bundles", () => generateUnpkgBundles(flags));
-
   await step("built", () =>
     esbuild.build({
-      entryPoints: ["src/repl/index.mjs", "src/repl/worker.mjs"],
+      entryPoints: [
+        "src/repl/index.mjs",
+        "src/repl/worker-babel.mjs",
+        "src/repl/worker-prettier.mjs",
+      ],
       outdir: dist,
       bundle: true,
       minify: flags.minify,
@@ -133,6 +73,7 @@ async function build(flags) {
     })
   );
 }
+
 const { flags } = meow(
   `
   Usage:
