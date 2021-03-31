@@ -1,9 +1,6 @@
-import download from "download";
-import esbuild from "esbuild";
-import fs from "fs-extra";
 import log from "fancy-log";
+import esbuild from "esbuild";
 import meow from "meow";
-import tempy from "tempy";
 import { execSync } from "child_process";
 import { red, cyan } from "kleur/colors";
 
