@@ -1,26 +1,7 @@
-let id = 0;
-const resolvers = {};
+import { requestFromWorkerFactory } from "./util/worker.mjs";
 
-function resultFromWorker(script) {
-  const worker = new Worker(script);
-
-  worker.addEventListener("message", ({ data }) => {
-    const { id, code } = data;
-    if (resolvers[id]) {
-      resolvers[id](code);
-    }
-  });
-
-  return (code, options = {}) =>
-    new Promise((resolve) => {
-      resolvers[id] = resolve;
-      worker.postMessage({ ...options, code, id });
-      id++;
-    });
-}
-
-const babelTransform = resultFromWorker("./worker-babel.js");
-const prettierFormat = resultFromWorker("./worker-prettier.js");
+const babelTransform = requestFromWorkerFactory("./worker-babel.js");
+const prettierFormat = requestFromWorkerFactory("./worker-prettier.js");
 
 export function transform(code, options = {}) {
   const { transpile = false, format = false } = options;

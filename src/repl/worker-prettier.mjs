@@ -1,13 +1,11 @@
-import importOnMessage from "./util/import-script-on-message.mjs";
+import { respondOnMessage } from "./util/worker.mjs";
 
-importOnMessage(
-  [
-    "https://unpkg.com/prettier/standalone.js",
-    "https://unpkg.com/prettier/parser-babel.js",
-  ],
-  (code, options) =>
-    prettier.format(code, {
-      ...options,
-      plugins: prettierPlugins,
-    })
+importScripts("https://unpkg.com/prettier/standalone.js");
+importScripts("https://unpkg.com/prettier/parser-babel.js");
+
+respondOnMessage((code, options) =>
+  prettier.format(code, {
+    ...options,
+    plugins: prettierPlugins,
+  })
 );
