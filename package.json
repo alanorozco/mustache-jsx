@@ -38,6 +38,6 @@
     ]
   },
   "dependencies": {
-    "xmldom": "^0.6.0"
+    "@xmldom/xmldom": "^0.7.5"
   }
 }
